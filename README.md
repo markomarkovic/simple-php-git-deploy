@@ -1,51 +1,82 @@
-Kind of continue from the other gist [how to install LAMP on an Amazon AMI](https://gist.github.com/1105007)
+A slight modification of [Build auto-deploy with php and git(hub) on an EC2 Amazon AMI instance](https://gist.github.com/1105010)
 
-##Install git
+This gist assumes:
 
-```
-sudo yum install git-core
-```
+ * you have a local repo
+ * that pushes to a **private** github repo (origin)
+ * and an EC2 Amazon AMI instance with LAMP running
+   * Your webpage are served from /var/www/html/
 
-##Create ssh directory since it doesn't exists by default on the Amazon AMI
+# 1 - On your local machine
 
-```
-sudo mkdir /var/www/.ssh
-sudo chown -R apache:apache /var/www/.ssh/
-```
+## Create the update script
 
-##Generate key for apache user
+The script I use is a little "verbose" in that I wanted a sanity check: it outputs the current directory, the user and then some git commands. Create a local file **github.php** with the following contents:
 
-```
-sudo -Hu apache ssh-keygen -t rsa  # chose "no passphrase"
-sudo cat /var/www/.ssh/id_rsa.pub
-# Add the key as a "deploy key" at https://github.com/you/myapp/admin
-```
+    <?php
+        echo shell_exec('whoami');
+        echo '<br />';
+        echo shell_exec('echo $PWD');
+        echo '<br />';
+        echo shell_exec('git pull');
+        echo '<br />';
+        echo shell_exec('git status');
 
-##Get the repo
+Add, commit and push this to github
 
-```
-cd /var/www/
-sudo chown -R apache:apache html
-sudo -Hu apache git clone git@github.com:yourUsername/yourApp.git html
-```
+    git add github.php
+    git commit -m 'Added the github update script'
+    git push -u origin master
 
-##Setup the update script
+# 2 - On the EC2 Machine
 
-```
-sudo -Hu apache nano html/update.php
-```
+## Install git
 
-```
-<?php `git pull`; ?>
-```
+    sudo yum install git-core
+
+## Create an ssh directory for the apache user
+
+    sudo mkdir /var/www/.ssh
+    sudo chown -R apache:apache /var/www/.ssh/
+
+## Generate a deploy key for apache user
+
+    sudo -Hu apache ssh-keygen -t rsa # choose "no passphrase"
+    sudo cat /var/www/.ssh/id_rsa.pub
+
+# 3 - On GitHub.com
+
+## Add the deploy key to your repo
+
+1. https://github.com/you/yourapp/admin/keys
+1. Paste the deploy key you generated on the EC2 machine
 
 ##Set up service hook in github
 
-1. Go to Repository Administration for your repo (http://github.com/username/repository/admin)
-2. Click Service Hooks, and you'll see a list of available services. Select Post-Receive URL.
-3. Enter the URL for your update script (e.g. http://example.com/update.php) and click Update Settings.
+1. https://github.com/oodavid/1DayLater/admin/hooks
+1. Select the **Post-Receive URL** service hook
+1. Enter the URL to your update script - http://example.com/github.php
+1. Click **Update Settings**
 
-##Sources
+# 4 - On the EC2 Machine
 
-* [ec2-webapp / INSTALL.md](https://github.com/rsms/ec2-webapp/blob/master/INSTALL.md#readme)
-* [How to deploy your code from GitHub automatically](http://writing.markchristian.org/how-to-deploy-your-code-from-github-automatic)
+## Pull the repo
+
+    cd /var/www/
+    sudo chown -R apache:apache html
+    sudo -Hu apache git clone git@github.com:you/yourapp.git html
+
+# Rejoice!
+
+Now you're ready to go :-)
+
+## Some notes
+
+ * At this point you should be able to push to github and your site will automatically pull down code from github
+ * You can manually trigger a pull by hitting http://example.com/github.php in your browser etc (you'll see the output too)
+ * It would be trivial to setup another repo on your EC2 box for different branches (develop, release-candidate etc) - repeat most of the steps but checkout a branch after pulling the repo down
+
+## Sources
+ * [Build auto-deploy with php and git(hub) on an EC2 Amazon AMI instance](https://gist.github.com/1105010) - who in turn referenced:
+   * [ec2-webapp / INSTALL.md](https://github.com/rsms/ec2-webapp/blob/master/INSTALL.md#readme)
+   * [How to deploy your code from GitHub automatically](http://writing.markchristian.org/how-to-deploy-your-code-from-github-automatic)
