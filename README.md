@@ -1,4 +1,4 @@
-# Auto-deploy with php and git(hub) on an EC2 Amazon AMI instance
+# Auto-deploy with php and git(hub) on an EC2 Amazon AMI
 
 This gist assumes:
 
