@@ -14,9 +14,17 @@ This gist assumes:
 The script I use is a little "verbose" in that I wanted a sanity check: it outputs the current directory, the user and then some git commands. Create a local file **github.php** with the following contents:
 
     <?php
-        echo shell_exec('whoami');
-        echo '<br />';
+        /**
+         * GitHub.php
+         *
+         * Used for automatically deploying websites via github, more deets here:
+         *
+         *		https://gist.github.com/1809044
+         */
+        
         echo shell_exec('echo $PWD');
+        echo '<br />';
+        echo shell_exec('whoami');
         echo '<br />';
         echo shell_exec('git pull');
         echo '<br />';
