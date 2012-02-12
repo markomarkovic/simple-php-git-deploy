@@ -1,3 +1,5 @@
+# Auto-deploy with php and git(hub) on an EC2 Amazon AMI instance
+
 This gist assumes:
 
  * you have a local repo
