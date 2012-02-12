@@ -1,11 +1,9 @@
-A slight modification of [Build auto-deploy with php and git(hub) on an EC2 Amazon AMI instance](https://gist.github.com/1105010)
-
 This gist assumes:
 
  * you have a local repo
  * that pushes to a **private** github repo (origin)
  * and an EC2 Amazon AMI instance with LAMP running
-   * Your webpage are served from /var/www/html/
+   * Your webpages are served from /var/www/html/
 
 # 1 - On your local machine
 
