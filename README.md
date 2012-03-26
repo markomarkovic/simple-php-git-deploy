@@ -1,58 +1,65 @@
-# Auto-deploy with php and git(hub) on an EC2 Amazon AMI
+
+# Deploy your site with git
 
 This gist assumes:
 
- * you have a local repo
- * that pushes to a **private** github repo (origin)
- * and an EC2 Amazon AMI instance with LAMP running
-   * Your webpages are served from /var/www/html/
+* you have a local git repo
+* with an online remote repository (github / bitbucket etc)
+* and a cloud server (Rackspace cloud / Amazon EC2 etc)
+  * your (PHP, Java, Perl, RoR, JSP) scripts are served from /var/www/html/
+  * your webpages are executed by apache
+  * apache's home directory is /var/www/ 
+  * ***(this describes a pretty standard apache setup on Redhat / Ubuntu / CentOS / Amazon AMI etc)***
 
 # 1 - On your local machine
 
-## Create the update script
+## 1.1 - Grab a deployment script for your site
 
-The script I use is a little "verbose" in that I wanted a sanity check: it outputs the current directory, the user and then some git commands. Create a local file **github.php** with the following contents:
+* [deploy.php](#file_deploy.php)
+* *other scripts yet to be written*
 
-    <?php
-        /**
-         * GitHub.php
-         *
-         * Used for automatically deploying websites via github, more deets here:
-         *
-         *		https://gist.github.com/1809044
-         */
-        
-        echo shell_exec('echo $PWD');
-        echo '<br />';
-        echo shell_exec('whoami');
-        echo '<br />';
-        echo shell_exec('git pull');
-        echo '<br />';
-        echo shell_exec('git status');
+## 1.2 - Add, commit and push this to github
 
-Add, commit and push this to github
+        git add deploy.php
+        git commit -m 'Added the git deployment script'
+        git push -u origin master
 
-    git add github.php
-    git commit -m 'Added the github update script'
-    git push -u origin master
+# 2 - On your server
 
-# 2 - On the EC2 Machine
+## 2.1 - Install git...
 
-## Install git
+After you've installed git, make sure it's a relatively new version - old scripts quickly become problematic as github / bitbucket / whatever will have the latests and greatest, if you don't have a recent version you'll need to figure out how to upgrade it :-)
 
-    sudo yum install git-core
+        git --version
 
-## Create an ssh directory for the apache user
+### ...on CentOS 5.6
 
-    sudo mkdir /var/www/.ssh
-    sudo chown -R apache:apache /var/www/.ssh/
+        # Add a nice repo
+        rpm -Uvh http://repo.webtatic.com/yum/centos/5/latest.rpm
+        # Install git
+        yum install --enablerepo=webtatic git-all
 
-## Generate a deploy key for apache user
+### ...using generic yum
 
-    sudo -Hu apache ssh-keygen -t rsa # choose "no passphrase"
-    sudo cat /var/www/.ssh/id_rsa.pub
+        sudo yum install git-core
 
-# 3 - On GitHub.com
+## 2.2 - Setup git
+
+        # Setup
+        git config --global user.name "Server"
+        git config --global user.email "server@server.com"
+
+## 2.3 - Create an ssh directory for the apache user
+
+        sudo mkdir /var/www/.ssh
+        sudo chown -R apache:apache /var/www/.ssh/
+
+## 2.4 - Generate a deploy key for apache user
+
+        sudo -Hu apache ssh-keygen -t rsa # choose "no passphrase"
+        sudo cat /var/www/.ssh/id_rsa.pub
+
+# 3 - On your git origin (github / bitbucket)
 
 ## Add the deploy key to your repo
 
@@ -66,13 +73,13 @@ Add, commit and push this to github
 1. Enter the URL to your update script - http://example.com/github.php
 1. Click **Update Settings**
 
-# 4 - On the EC2 Machine
+# 4 - On the Server
 
-## Pull the repo
+## Pull the code
 
-    cd /var/www/
-    sudo chown -R apache:apache html
-    sudo -Hu apache git clone git@github.com:you/yourapp.git html
+        cd /var/www/
+        sudo chown -R apache:apache html
+        sudo -Hu apache git clone git@github.com:you/yourapp.git html
 
 # Rejoice!
 
