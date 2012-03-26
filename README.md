@@ -1,4 +1,3 @@
-
 # Deploy your site with git
 
 This gist assumes:
@@ -6,10 +5,12 @@ This gist assumes:
 * you have a local git repo
 * with an online remote repository (github / bitbucket etc)
 * and a cloud server (Rackspace cloud / Amazon EC2 etc)
-  * your (PHP, Java, Perl, RoR, JSP) scripts are served from /var/www/html/
+  * your (PHP) scripts are served from /var/www/html/
   * your webpages are executed by apache
   * apache's home directory is /var/www/ 
   * ***(this describes a pretty standard apache setup on Redhat / Ubuntu / CentOS / Amazon AMI etc)***
+
+***you should be able to do the same with Java, Perl, RoR, JSP etc. however you'll need to recreate the (rather simple) PHP script***
 
 # 1 - On your local machine
 
