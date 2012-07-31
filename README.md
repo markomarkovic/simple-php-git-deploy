@@ -91,7 +91,12 @@ After you've installed git, make sure it's a relatively new version - old script
 
 ### Set up service hook
 
-***Sadly bitbucket does not (to my knowledge) have the option to ping a URL with a post-receive hook.***
+1. Go to: Repo > Admin > Services
+1. Select "POST"
+1. Add the URL to your deployment script - http://server.com/deploy.php
+1. Save
+
+***Thanks to DrewAPicture in the comments for this one***
 
 # 4 - On the Server
 
