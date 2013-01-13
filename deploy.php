@@ -78,20 +78,10 @@ define('TIME_LIMIT', 30);
 	<meta charset="utf-8">
 	<title>Simple PHP GIT deploy script</title>
 	<style>
-body {
-	padding: 0 1em;
-	background: #000;
-	color: #fff;
-}
-h2 {
-	color: #c33;
-}
-.prompt {
-	color: #6be234;
-}
-.command {
-	color: #729fcf;
-}
+body { padding: 0 1em; background: #222; color: #fff; }
+h2 { color: #c33; }
+.prompt { color: #6be234; }
+.command { color: #729fcf; }
 	</style>
 </head>
 <body>
