@@ -21,15 +21,15 @@ define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
 define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
 
 /**
+ * Which branch are we going to use for deployment.
+ */
+define('BRANCH', 'master');
+
+/**
  * This is where the code resides on the local machine.
  * Don't forget the trailing slash!
  */
 define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
-
-/**
- * Which branch are we going to use for deployment.
- */
-define('BRANCH', 'master');
 
 /**
  * Weather to delete the files that are not in the repository but are on the
@@ -107,9 +107,10 @@ foreach (array('git', 'rsync') as $command) {
 		die(sprintf('<b>%s</b> not available. It need to be installed on the server for this script to work.', $command));
 	} else {
 		$binaries[$command] = $path;
+		$version = explode("\n", shell_exec($path.' --version'));
 		printf('<b>%s</b> : %s'."\n"
 			, $path
-			, explode("\n", shell_exec($path.' --version'))[0]
+			, $version[0]
 		);
 	}
 }
@@ -175,7 +176,6 @@ $commands[] = sprintf(
 );
 
 // Run the commands
-$output = '';
 foreach ($commands as $command) {
 	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
 	chdir(TMP_DIR); // Ensure that we're in the right directory
