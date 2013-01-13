@@ -60,6 +60,11 @@ define('EXCLUDE', serialize(array(
 define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'-'.time().'/');
 
 /**
+ * Output the version of the deployed code.
+ */
+define('VERSION_FILE', TMP_DIR.'DEPLOYED_VERSION.txt');
+
+/**
  * Time limit for each command, in seconds
  */
 define('TIME_LIMIT', 30);
@@ -150,6 +155,15 @@ $commands[] = sprintf(
 	'%s submodule update --init --recursive'
 	, $binaries['git']
 );
+
+// Describe the deployed version
+if (defined('VERSION_FILE') && VERSION_FILE !== '') {
+	$commands[] = sprintf(
+		'%s describe --always > %s'
+		, $binaries['git']
+		, VERSION_FILE
+	);
+}
 
 // Deploy everything!
 $exclude = '';
