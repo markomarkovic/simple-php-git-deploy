@@ -38,7 +38,7 @@ foreach ($commands as $command){
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>GIT DEPLOYMENT SCRIPT</title>
+	<title>Simple PHP GIT deploy script</title>
 	<style>
 body {
 	padding: 0 1em;
