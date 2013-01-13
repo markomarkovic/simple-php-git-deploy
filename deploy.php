@@ -123,7 +123,7 @@ foreach (array('git', 'rsync') as $command) {
 
 Environment OK.
 
-Deploying <?php echo REMOTE_REPOSITORY."\n"; ?>
+Deploying <?php echo REMOTE_REPOSITORY; ?> <?php echo BRANCH."\n"; ?>
 to        <?php echo TARGET_DIR; ?> ...
 
 <?php
