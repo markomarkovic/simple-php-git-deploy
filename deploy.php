@@ -38,7 +38,7 @@ define('BRANCH', 'master');
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
  * careful. All files that are not in the repository are going to be deleted,
- * except the ones defined in IGNORE_DIRS section! BE CAREFUL!
+ * except the ones defined in EXCLUDE section! BE CAREFUL!
  */
 define('DELETE_FILES', false);
 
