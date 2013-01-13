@@ -107,9 +107,10 @@ foreach (array('git', 'rsync') as $command) {
 		die(sprintf('<b>%s</b> not available. It need to be installed on the server for this script to work.', $command));
 	} else {
 		$binaries[$command] = $path;
+		$version = explode("\n", shell_exec($path.' --version'));
 		printf('<b>%s</b> : %s'."\n"
 			, $path
-			, explode("\n", shell_exec($path.' --version'))[0]
+			, $version[0]
 		);
 	}
 }
