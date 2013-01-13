@@ -1,10 +1,9 @@
 <?php
 /**
- * GIT DEPLOYMENT SCRIPT
+ * Simple PHP GIT deploy script
  *
- * Used for automatically deploying websites via github or bitbucket, more deets here:
- *
- *		https://gist.github.com/1809044
+ * Used to automatically update the code on the server when triggered
+ * by a git hook on a repository.
  */
 
 // The commands
@@ -18,12 +17,12 @@ $commands = array(
 	'git submodule status',
 );
 
-// Run the commands for output
+// Run the commands
 $output = '';
 foreach ($commands as $command){
-	// Run it
+	// Run the command
 	$tmp = shell_exec($command);
-	// Output
+	// Append the output
 	$output .= sprintf('
 <span class="prompt">$</span> <span class="output">%s</span>
 %s
@@ -33,7 +32,7 @@ foreach ($commands as $command){
 	);
 }
 
-// Make it pretty for manual user access (and why not?)
+// Display the results
 ?>
 <!DOCTYPE html>
 <html lang="en">
