@@ -85,7 +85,7 @@ h2 { color: #c33; }
 </head>
 <body>
 <?php
-if (!isset($_GET['sid']) || $_GET['sid'] !== SECRET_ACCESS_TOKEN) {
+if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN) {
 	die('<h2>ACCESS DENIED!</h2>');
 }
 if (SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
