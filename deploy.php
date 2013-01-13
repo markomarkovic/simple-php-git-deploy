@@ -6,12 +6,58 @@
  * by a git hook on a repository.
  */
 
+// Configuration
+
 /**
  * Protect the script from unauthorized access by using a secret string.
- * If it's not present in the access url as a GET variable named `sat`
+ * If it's not present in the access URL as a GET variable named `sat`
  * e.g. deploy.php?sat=Bett...s the script is going to fail.
  */
 define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
+
+/**
+ * The address of the remote GIT repository that contains the code we're
+ * updating
+ */
+define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
+
+/**
+ * This is where the code resides on the local machine.
+ * Don't forget the trailing slash!
+ */
+define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
+
+/**
+ * Which branch are we going to use for deployment.
+ */
+define('BRANCH', 'master');
+
+/**
+ * Weather to delete the files that are not in the repository but are on the
+ * local machine.
+ *
+ * !!! WARNING !!! This can lead to a serious loss of data if you're not
+ * careful. All files that are not in the repository are going to be deleted,
+ * except the ones defined in IGNORE_DIRS section! BE CAREFUL!
+ */
+define('DELETE_FILES', false);
+
+/**
+ * The directories that are going to be ignored when updating the code.
+ * Normally, these are the directories containing files that are not part of
+ * code base, for example user uploads or similar.
+ */
+define('IGNORE_DIRS', serialize(array(
+	'webroot/user_files/',
+	'webroot/uploads',
+)));
+
+/**
+ * Temporary directory we'll use to stage the code before the update.
+ */
+define('TMP_DIR', '/tmp/spgd-'.time().'/');
+
+// Configuration end.
 
 ?>
 <!DOCTYPE html>
