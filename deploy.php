@@ -2,8 +2,7 @@
 /**
  * Simple PHP GIT deploy script
  *
- * Used to automatically update the code on the server when triggered
- * by a git hook on a repository.
+ * Automatically update the code on the server when triggered by a updated remote repository.
  */
 
 // Configuration
