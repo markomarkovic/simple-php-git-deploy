@@ -43,13 +43,15 @@ define('BRANCH', 'master');
 define('DELETE_FILES', false);
 
 /**
- * The directories that are going to be ignored when updating the code.
+ * The directories and files that are to be excluded when updating the code.
  * Normally, these are the directories containing files that are not part of
- * code base, for example user uploads or similar.
+ * code base, for example user uploads or server-specific configuration files.
+ * Use rsync exclude pattern syntax for each element.
  */
-define('IGNORE_DIRS', serialize(array(
-	'webroot/user_files/',
+define('EXCLUDE', serialize(array(
+	'.git',
 	'webroot/uploads',
+	'app/config/database.php',
 )));
 
 /**
