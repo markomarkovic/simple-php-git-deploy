@@ -24,7 +24,7 @@ foreach ($commands as $command){
 	$tmp = shell_exec($command);
 	// Append the output
 	$output .= sprintf('
-<span class="prompt">$</span> <span class="output">%s</span>
+<span class="prompt">$</span> <span class="command">%s</span>
 %s
 '
 		, htmlentities(trim($command))
@@ -48,7 +48,7 @@ body {
 .prompt {
 	color: #6be234;
 }
-.output {
+.command {
 	color: #729fcf;
 }
 	</style>
