@@ -51,17 +51,16 @@ $output = '';
 foreach ($commands as $command){
 	// Run the command
 	$tmp = shell_exec($command);
-	// Append the output
-	$output .= sprintf('
+	// Output the result
+	printf('
 <span class="prompt">$</span> <span class="command">%s</span>
 %s
 '
 		, htmlentities(trim($command))
 		, htmlentities(trim($tmp))
 	);
+	flush(); // Try to output everything as it happens
 }
-
-echo $output;
 ?>
 </pre>
 </body>
