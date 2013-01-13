@@ -21,15 +21,15 @@ define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
 define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
 
 /**
+ * Which branch are we going to use for deployment.
+ */
+define('BRANCH', 'master');
+
+/**
  * This is where the code resides on the local machine.
  * Don't forget the trailing slash!
  */
 define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
-
-/**
- * Which branch are we going to use for deployment.
- */
-define('BRANCH', 'master');
 
 /**
  * Weather to delete the files that are not in the repository but are on the
