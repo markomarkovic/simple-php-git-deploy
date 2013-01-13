@@ -24,7 +24,7 @@ foreach ($commands as $command){
 	// Run it
 	$tmp = shell_exec($command);
 	// Output
-	$output .= "<span style=\"color: #6BE234;\">\$</span> <span style=\"color: #729FCF;\">{$command}\n</span>";
+	$output .= "<span class=\"prompt\">\$</span> <span class=\"output\">{$command}\n</span>";
 	$output .= htmlentities(trim($tmp)) . "\n";
 }
 
@@ -35,8 +35,21 @@ foreach ($commands as $command){
 <head>
 	<meta charset="utf-8">
 	<title>GIT DEPLOYMENT SCRIPT</title>
+	<style>
+body {
+	padding: 0 1em;
+	background: #000;
+	color: #fff;
+}
+.prompt {
+	color: #6be234;
+}
+.output {
+	color: #729fcf;
+}
+	</style>
 </head>
-<body style="background-color: #000000; color: #FFFFFF; font-weight: bold; padding: 0 10px;">
+<body>
 <pre>
  .  ____  .    ____________________________
  |/      \|   |                            |
