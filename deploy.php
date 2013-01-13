@@ -6,33 +6,6 @@
  * by a git hook on a repository.
  */
 
-// The commands
-$commands = array(
-	'echo $PWD',
-	'whoami',
-	'git pull',
-	'git status',
-	'git submodule sync',
-	'git submodule update',
-	'git submodule status',
-);
-
-// Run the commands
-$output = '';
-foreach ($commands as $command){
-	// Run the command
-	$tmp = shell_exec($command);
-	// Append the output
-	$output .= sprintf('
-<span class="prompt">$</span> <span class="command">%s</span>
-%s
-'
-		, htmlentities(trim($command))
-		, htmlentities(trim($tmp))
-	);
-}
-
-// Display the results
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +34,35 @@ body {
  |___==___|  /              &copy; oodavid 2012 |
               |____________________________|
 
-<?php echo $output; ?>
+<?php
+// The commands
+$commands = array(
+	'echo $PWD',
+	'whoami',
+	'git pull',
+	'git status',
+	'git submodule sync',
+	'git submodule update',
+	'git submodule status',
+);
+
+// Run the commands
+$output = '';
+foreach ($commands as $command){
+	// Run the command
+	$tmp = shell_exec($command);
+	// Append the output
+	$output .= sprintf('
+<span class="prompt">$</span> <span class="command">%s</span>
+%s
+'
+		, htmlentities(trim($command))
+		, htmlentities(trim($tmp))
+	);
+}
+
+echo $output;
+?>
 </pre>
 </body>
 </html>
