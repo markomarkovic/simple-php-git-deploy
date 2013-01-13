@@ -24,8 +24,13 @@ foreach ($commands as $command){
 	// Run it
 	$tmp = shell_exec($command);
 	// Output
-	$output .= "<span class=\"prompt\">\$</span> <span class=\"output\">{$command}\n</span>";
-	$output .= htmlentities(trim($tmp)) . "\n";
+	$output .= sprintf('
+<span class="prompt">$</span> <span class="output">%s</span>
+%s
+'
+		, htmlentities(trim($command))
+		, htmlentities(trim($tmp))
+	);
 }
 
 // Make it pretty for manual user access (and why not?)
