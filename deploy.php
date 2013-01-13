@@ -28,11 +28,7 @@ body {
 </head>
 <body>
 <pre>
- .  ____  .    ____________________________
- |/      \|   |                            |
-[| <span style="color: #FF0000;">&hearts;    &hearts;</span> |]  | Git Deployment Script v0.1 |
- |___==___|  /              &copy; oodavid 2012 |
-              |____________________________|
+Working &hellip;
 
 <?php
 // The commands
@@ -62,6 +58,8 @@ foreach ($commands as $command){
 	flush(); // Try to output everything as it happens
 }
 ?>
+
+Done.
 </pre>
 </body>
 </html>
