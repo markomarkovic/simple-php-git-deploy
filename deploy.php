@@ -20,7 +20,7 @@ $commands = array(
 
 // Run the commands for output
 $output = '';
-foreach($commands AS $command){
+foreach ($commands as $command){
 	// Run it
 	$tmp = shell_exec($command);
 	// Output
@@ -30,10 +30,10 @@ foreach($commands AS $command){
 
 // Make it pretty for manual user access (and why not?)
 ?>
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
+	<meta charset="utf-8">
 	<title>GIT DEPLOYMENT SCRIPT</title>
 </head>
 <body style="background-color: #000000; color: #FFFFFF; font-weight: bold; padding: 0 10px;">
