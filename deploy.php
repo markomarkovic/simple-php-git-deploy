@@ -123,21 +123,54 @@ to        <?php echo TARGET_DIR; ?> ...
 
 <?php
 // The commands
-$commands = array(
-	'echo $PWD',
-	'whoami',
-	'git pull',
-	'git status',
-	'git submodule sync',
-	'git submodule update',
-	'git submodule status',
+$commands = array();
+
+// Clone the repository into the TMP_DIR
+$commands[] = sprintf(
+	'%s clone --depth=1 %s %s'
+	, $binaries['git']
+	, REMOTE_REPOSITORY
+	, TMP_DIR
+);
+
+// Checkout the BRANCH
+$commands[] = sprintf(
+	'%s checkout %s'
+	, $binaries['git']
+	, BRANCH
+);
+
+// Update the submodules
+$commands[] = sprintf(
+	'%s submodule update --init --recursive'
+	, $binaries['git']
+);
+
+// Deploy everything!
+$exclude = '';
+foreach (unserialize(EXCLUDE) as $exc) {
+	$exclude .= ' --exclude='.$exc;
+}
+$commands[] = sprintf(
+	'%s -azv %s %s %s %s'
+	, $binaries['rsync']
+	, TMP_DIR
+	, TARGET_DIR
+	, (DELETE_FILES) ? '--delete-after' : ''
+	, $exclude
+);
+
+// Remove the TMP_DIR
+$commands[] = sprintf(
+	'rm -rf %s'
+	, TMP_DIR
 );
 
 // Run the commands
 $output = '';
-foreach ($commands as $command){
-	// Run the command
-	$tmp = shell_exec($command.' 2>&1');
+foreach ($commands as $command) {
+	chdir(TMP_DIR); // Ensure that we're in the right directory
+	$tmp = shell_exec($command.' 2>&1'); // Execute the command
 	// Output the result
 	printf('
 <span class="prompt">$</span> <span class="command">%s</span>
