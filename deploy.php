@@ -59,6 +59,11 @@ define('EXCLUDE', serialize(array(
  */
 define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'-'.time().'/');
 
+/**
+ * Time limit for each command, in seconds
+ */
+define('TIME_LIMIT', 30);
+
 // Configuration end.
 
 ?>
@@ -169,6 +174,7 @@ $commands[] = sprintf(
 // Run the commands
 $output = '';
 foreach ($commands as $command) {
+	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
 	chdir(TMP_DIR); // Ensure that we're in the right directory
 	$tmp = shell_exec($command.' 2>&1'); // Execute the command
 	// Output the result
