@@ -175,7 +175,6 @@ $commands[] = sprintf(
 );
 
 // Run the commands
-$output = '';
 foreach ($commands as $command) {
 	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
 	chdir(TMP_DIR); // Ensure that we're in the right directory
