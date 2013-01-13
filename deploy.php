@@ -57,7 +57,7 @@ define('EXCLUDE', serialize(array(
 /**
  * Temporary directory we'll use to stage the code before the update.
  */
-define('TMP_DIR', '/tmp/spgd-'.time().'/');
+define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'-'.time().'/');
 
 // Configuration end.
 
