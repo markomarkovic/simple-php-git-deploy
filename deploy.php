@@ -95,7 +95,9 @@ if (SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 ?>
 <pre>
 
-Checking the environment &hellip;
+Checking the environment ...
+
+Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
 
 <?php
 // Check if the needed programs are available
@@ -112,7 +114,10 @@ foreach (array('git', 'rsync') as $command) {
 }
 ?>
 
-Working &hellip;
+Environment OK.
+
+Deploying <?php echo REMOTE_REPOSITORY."\n"; ?>
+to        <?php echo TARGET_DIR; ?> ...
 
 <?php
 // The commands
