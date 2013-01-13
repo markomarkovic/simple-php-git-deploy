@@ -92,6 +92,24 @@ if (SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 }
 ?>
 <pre>
+
+Checking the environment &hellip;
+
+<?php
+// Check if the needed programs are available
+foreach (array('git', 'rsync') as $command) {
+	$path = trim(shell_exec('which '.$command));
+	if ($path == '') {
+		die(sprintf('<b>%s</b> not available. It need to be installed on the server for this script to work.', $command));
+	} else {
+		printf('<b>%s</b> : %s'."\n"
+			, $path
+			, explode("\n", shell_exec($path.' --version'))[0]
+		);
+	}
+}
+?>
+
 Working &hellip;
 
 <?php
