@@ -31,7 +31,7 @@ foreach($commands AS $command){
 // Make it pretty for manual user access (and why not?)
 ?>
 <!DOCTYPE HTML>
-<html lang="en-US">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>GIT DEPLOYMENT SCRIPT</title>
