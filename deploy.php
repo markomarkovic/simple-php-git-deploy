@@ -161,7 +161,7 @@ foreach (unserialize(EXCLUDE) as $exc) {
 	$exclude .= ' --exclude='.$exc;
 }
 $commands[] = sprintf(
-	'%s -azv %s %s %s %s'
+	'%s -rltgoDzv %s %s %s %s'
 	, $binaries['rsync']
 	, TMP_DIR
 	, TARGET_DIR
