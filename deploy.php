@@ -178,7 +178,9 @@ $commands[] = sprintf(
 // Run the commands
 foreach ($commands as $command) {
 	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
-	chdir(TMP_DIR); // Ensure that we're in the right directory
+	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
+		chdir(TMP_DIR); // Ensure that we're in the right directory
+	}
 	$tmp = shell_exec($command.' 2>&1'); // Execute the command
 	// Output the result
 	printf('
