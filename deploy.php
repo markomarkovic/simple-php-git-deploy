@@ -135,8 +135,10 @@ $commands[] = sprintf(
 
 // Checkout the BRANCH
 $commands[] = sprintf(
-	'%s checkout %s'
+	'%s --git-dir="%s.git" --work-tree="%s" checkout %s' 
 	, $binaries['git']
+	, TMP_DIR
+	, TMP_DIR
 	, BRANCH
 );
 
@@ -149,8 +151,10 @@ $commands[] = sprintf(
 // Describe the deployed version
 if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 	$commands[] = sprintf(
-		'%s describe --always > %s'
+		'%s --git-dir="%s.git" --work-tree="%s" describe --always > %s'
 		, $binaries['git']
+		, TMP_DIR
+		, TMP_DIR
 		, VERSION_FILE
 	);
 }
