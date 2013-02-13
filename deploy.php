@@ -78,9 +78,10 @@ define('TIME_LIMIT', 30);
 	<title>Simple PHP GIT deploy script</title>
 	<style>
 body { padding: 0 1em; background: #222; color: #fff; }
-h2 { color: #c33; }
+h2, .error { color: #c33; }
 .prompt { color: #6be234; }
 .command { color: #729fcf; }
+.output { color: #999; }
 	</style>
 </head>
 <body>
@@ -104,7 +105,7 @@ $binaries = array();
 foreach (array('git', 'rsync') as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
-		die(sprintf('<b>%s</b> not available. It need to be installed on the server for this script to work.', $command));
+		die(sprintf('<div class="error"><b>%s</b> not available. It need to be installed on the server for this script to work.</div>', $command));
 	} else {
 		$binaries[$command] = $path;
 		$version = explode("\n", shell_exec($path.' --version'));
@@ -174,7 +175,7 @@ $commands[] = sprintf(
 );
 
 // Remove the TMP_DIR
-$commands[] = sprintf(
+$commands['cleanup'] = sprintf(
 	'rm -rf %s'
 	, TMP_DIR
 );
@@ -185,16 +186,43 @@ foreach ($commands as $command) {
 	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
 		chdir(TMP_DIR); // Ensure that we're in the right directory
 	}
-	$tmp = shell_exec($command.' 2>&1'); // Execute the command
+	$tmp = array();
+	exec($command.' 2>&1', $tmp, $return_code); // Execute the command
 	// Output the result
 	printf('
 <span class="prompt">$</span> <span class="command">%s</span>
-%s
+<div class="output">%s</div>
 '
 		, htmlentities(trim($command))
-		, htmlentities(trim($tmp))
+		, htmlentities(trim(implode("\n", $tmp)))
 	);
 	flush(); // Try to output everything as it happens
+
+	// Error handling and cleanup
+	if ($return_code !== 0) {
+		$tmp = shell_exec($commands['cleanup']);
+		printf('
+<div class="error">
+Error encountered!
+Stopping the script to prevent possible data loss.
+CHECK THE DATA IN YOUR TARGET DIR!
+</div>
+
+
+Cleaning up temporary files ...
+
+<span class="prompt">$</span> <span class="command">%s</span>
+<div class="output">%s</div>
+'
+			, htmlentities(trim($commands['cleanup']))
+			, htmlentities(trim($tmp))
+		);
+		error_log(sprintf(
+			'Deployment error! %s'
+			, __FILE__
+		));
+		break;
+	}
 }
 ?>
 
