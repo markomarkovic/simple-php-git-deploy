@@ -78,7 +78,7 @@ define('TIME_LIMIT', 30);
 	<title>Simple PHP GIT deploy script</title>
 	<style>
 body { padding: 0 1em; background: #222; color: #fff; }
-h2 { color: #c33; }
+h2, .error { color: #c33; }
 .prompt { color: #6be234; }
 .command { color: #729fcf; }
 .output { color: #999; }
@@ -105,7 +105,7 @@ $binaries = array();
 foreach (array('git', 'rsync') as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
-		die(sprintf('<b>%s</b> not available. It need to be installed on the server for this script to work.', $command));
+		die(sprintf('<div class="error"><b>%s</b> not available. It need to be installed on the server for this script to work.</div>', $command));
 	} else {
 		$binaries[$command] = $path;
 		$version = explode("\n", shell_exec($path.' --version'));
