@@ -81,6 +81,7 @@ body { padding: 0 1em; background: #222; color: #fff; }
 h2 { color: #c33; }
 .prompt { color: #6be234; }
 .command { color: #729fcf; }
+.output { color: #999; }
 	</style>
 </head>
 <body>
@@ -189,7 +190,7 @@ foreach ($commands as $command) {
 	// Output the result
 	printf('
 <span class="prompt">$</span> <span class="command">%s</span>
-%s
+<div class="output">%s</div>
 '
 		, htmlentities(trim($command))
 		, htmlentities(trim($tmp))
