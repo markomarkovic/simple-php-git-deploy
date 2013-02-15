@@ -3,6 +3,9 @@
  * Simple PHP GIT deploy script
  *
  * Automatically deploy the code using php and git.
+ *
+ * @version 1.0.5
+ * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
 // Configuration
