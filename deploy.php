@@ -4,7 +4,7 @@
  *
  * Automatically deploy the code using php and git.
  *
- * @version 1.0.5
+ * @version 1.0.6
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
