@@ -71,6 +71,14 @@ define('VERSION_FILE', TMP_DIR.'DEPLOYED_VERSION.txt');
  */
 define('TIME_LIMIT', 30);
 
+/**
+ * OPTIONAL
+ * Backup the TARGET_DIR into BACKUP_DIR before deployment
+ *
+ * @var string Full backup directory path e.g. '/tmp/'
+ */
+define('BACKUP_DIR', false);
+
 // Configuration end.
 
 ?>
@@ -105,7 +113,7 @@ Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
 <?php
 // Check if the needed programs are available
 $binaries = array();
-foreach (array('git', 'rsync') as $command) {
+foreach (array('git', 'rsync', 'tar') as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
 		die(sprintf('<div class="error"><b>%s</b> not available. It need to be installed on the server for this script to work.</div>', $command));
@@ -160,6 +168,19 @@ if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 		, TMP_DIR
 		, TMP_DIR
 		, VERSION_FILE
+	);
+}
+
+// Backup the TARGET_DIR
+if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
+	$commands[] = sprintf(
+		'%s czf %s/%s-%s-%s.tar.gz %s*'
+		, $binaries['tar']
+		, BACKUP_DIR
+		, basename(TARGET_DIR)
+		, md5(TARGET_DIR)
+		, date('YmdHis')
+		, TARGET_DIR // We're backing up this directory into BACKUP_DIR
 	);
 }
 
