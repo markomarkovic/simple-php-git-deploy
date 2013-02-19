@@ -3,7 +3,7 @@ _Automatically deploy the code using php and git._
 
 ## Requirements
 
-`git` and `rsync` binaries are required on the server that's running the script (server machine).
+`git`, `rsync`, and `tar` binaries are required on the server that's running the script (server machine).
 
 Also, the system user that's running PHP needs to have the right ssh keys to access the remote repository (If it's a private repo) and have the required permissions to update the files on the server machine.
 
