@@ -4,11 +4,11 @@
  *
  * Automatically deploy the code using php and git.
  *
- * @version 1.0.6
+ * @version 1.0.7
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
-// Configuration
+// =========================================[ Configuration start ]===
 
 /**
  * Protect the script from unauthorized access by using a secret string.
@@ -97,7 +97,7 @@ define('TIME_LIMIT', 30);
  */
 define('BACKUP_DIR', false);
 
-// Configuration end.
+// ===========================================[ Configuration end ]===
 
 ?>
 <!DOCTYPE html>
@@ -155,6 +155,8 @@ to        <?php echo TARGET_DIR; ?> ...
 // The commands
 $commands = array();
 
+// ========================================[ Pre-Deployment steps ]===
+
 // Clone the repository into the TMP_DIR
 $commands[] = sprintf(
 	'%s clone --depth=1 %s %s'
@@ -202,11 +204,14 @@ if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
 	);
 }
 
-// Deploy everything!
+// ==================================================[ Deployment ]===
+
+// Compile exclude parameters
 $exclude = '';
 foreach (unserialize(EXCLUDE) as $exc) {
 	$exclude .= ' --exclude='.$exc;
 }
+// Deployment command
 $commands[] = sprintf(
 	'%s -rltgoDzv %s %s %s %s'
 	, $binaries['rsync']
@@ -216,7 +221,7 @@ $commands[] = sprintf(
 	, $exclude
 );
 
-// Post-Deployment
+// =======================================[ Post-Deployment steps ]===
 
 // Remove the TMP_DIR
 $commands['cleanup'] = sprintf(
@@ -224,7 +229,8 @@ $commands['cleanup'] = sprintf(
 	, TMP_DIR
 );
 
-// Run the commands
+// =======================================[ Run the command steps ]===
+
 foreach ($commands as $command) {
 	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
 	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
