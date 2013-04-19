@@ -4,7 +4,7 @@
  *
  * Automatically deploy the code using php and git.
  *
- * @version 1.0.7
+ * @version 1.0.8
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
@@ -159,19 +159,11 @@ $commands = array();
 
 // Clone the repository into the TMP_DIR
 $commands[] = sprintf(
-	'%s clone --depth=1 %s %s'
+	'%s clone --depth=1 --branch %s %s %s'
 	, $binaries['git']
+	, BRANCH
 	, REMOTE_REPOSITORY
 	, TMP_DIR
-);
-
-// Checkout the BRANCH
-$commands[] = sprintf(
-	'%s --git-dir="%s.git" --work-tree="%s" checkout %s'
-	, $binaries['git']
-	, TMP_DIR
-	, TMP_DIR
-	, BRANCH
 );
 
 // Update the submodules
