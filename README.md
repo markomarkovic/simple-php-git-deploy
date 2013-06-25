@@ -11,8 +11,8 @@ _Automated project deployment via Git and PHP._
 
 ## Basic Idea
  Deployer is initialized by your GitHub or Bitbucket repo whenever said repo is updated. It then...
- 1. Clones the newly updated repo into a temporary directory on your server
- 1. Uses rsync to move new or changed files from the temporary directory to the deploy location
+ 1. `git` clones the newly updated repo into a temporary directory on your server
+ 1. Uses `rsync` to move new or changed files from the temporary directory to the deploy location
  1. Cleans up after itself
 
 
