@@ -5,7 +5,7 @@ _Automated project deployment via Git and PHP._
 
 * `git`, `rsync`, and `tar` binaries are required on the machine to which you would like to deploy.
 
-* The system user that's running PHP (e.g. `www-data`) needs to have the necessary permissions required to update the files on the server machine.
+* The system user that's running PHP (e.g. `www-data`) needs to have the necessary permissions required to update files on the server machine.
 
 * If the Git repo you wish to deploy is private, the system user running PHP also needs to have a valid ssh key in order to access the remote repository.
 
