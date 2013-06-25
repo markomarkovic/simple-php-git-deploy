@@ -10,9 +10,9 @@ _Automated project deployment via Git and PHP._
 * If the Git repo you wish to deploy is private, the system user running PHP also needs to have a valid ssh key in order to access the remote repository.
 
 ## Basic Idea
- Deployer is called by your GitHub or Bitbucket repo when said repo is updated. It then...
- 1. Clones the repo into a tmp directory on your server
- 1. Uses rsync to move new or changed files to the deploy location
+ Deployer is initialized by your GitHub or Bitbucket repo whenever said repo is updated. It then...
+ 1. Clones the newly updated repo into a temporary directory on your server
+ 1. Uses rsync to move new or changed files from the temporary directory to the deploy location
  1. Cleans up after itself
 
 
