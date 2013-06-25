@@ -1,15 +1,17 @@
 # Deployer
-_Automated code deployment using git and php._
+_Automated project deployment via Git and PHP._
 
 ## Requirements
 
-`git`, `rsync`, and `tar` binaries are required on the server that's running the script (server machine).
+* `git`, `rsync`, and `tar` binaries are required on the machine to which you would like to deploy.
 
-Also, the system user that's running PHP needs to have the right ssh keys to access the remote repository (If it's a private repo) and have the required permissions to update the files on the server machine.
+* The system user that's running PHP (e.g. `www-data`) needs to have the necessary permissions required to update the files on the server machine.
+
+* If the Git repo you wish to deploy is private, the system user running PHP also needs to have a valid ssh key in order to access the remote repository.
 
 ## Usage
 
- * Configure `deploy.php` and put it somewhere that's accessible from the Internet.
+ * Configure `deploy.php` and put it somewhere that's publicly accessible from the Internet.
  * Configure your git repository to call this script when the code is updated. The instructions for GitHub and Bitbucket are below.
 
 ### GitHub
