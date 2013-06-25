@@ -1,5 +1,5 @@
 # Deployer
-_Automatically deploy the code using php and git._
+_Automated code deployment using git and php._
 
 ## Requirements
 
