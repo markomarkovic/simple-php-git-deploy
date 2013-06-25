@@ -9,6 +9,11 @@ _Automated project deployment via Git and PHP._
 
 * If the Git repo you wish to deploy is private, the system user running PHP also needs to have a valid ssh key in order to access the remote repository.
 
+## Basic Idea
+1. Deployer is called by your GitHub or Bitbucket repo when said repo is updated.
+2. 
+
+
 ## Usage
 
  * Configure `deploy.php` and put it somewhere that's publicly accessible from the Internet.
