@@ -1,4 +1,4 @@
-# Simple PHP GIT deploy script
+# Deployer
 _Automatically deploy the code using php and git._
 
 ## Requirements
