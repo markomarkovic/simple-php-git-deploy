@@ -217,8 +217,15 @@ $commands[] = sprintf(
 
 // Remove the TMP_DIR
 $commands['cleanup'] = sprintf(
-	'rm -rf %s'
-	, TMP_DIR
+    'rm -rf %s'
+    , TMP_DIR
+);
+
+
+// Change Permissions
+$commands['permissions'] = sprintf(
+    'chmod 777 -R ' . TARGET_DIR
+    , TMP_DIR
 );
 
 // =======================================[ Run the command steps ]===
