@@ -1,4 +1,4 @@
-# Deployer
+# Deploy
 _Automated project deployment via Git and PHP._
 
 ## Requirements
