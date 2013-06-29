@@ -50,7 +50,8 @@ $time_limit = 30;
 
 
 //--------------------------------------//
-// END CONFIGURATION – Apply variables
+// END CONFIGURATION
+// No need to edit anything below here.
 
 // Sets secret access token
 define('SECRET_ACCESS_TOKEN', $secret_access_token);
@@ -125,16 +126,12 @@ if (SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 ?>
 
 <span class="header">
- (                                    
- )\ )            (                    
-(()/(    (       )\    (      (  (    
- /(_))  ))\`  ) ((_)(  )\ )  ))\ )(   
-(_))_  /((_)(/(  _  )\(()/( /((_|()\  
- |   \(_))((_)_\| |((_))(_)|_))  ((_) 
- | |) / -_) '_ \) / _ \ || / -_)| '_| 
- |___/\___| .__/|_\___/\_, \___||_|   
-          |_|          |__/                   
-
+     _            _             
+  __| | ___ _ __ | | ___  _   _ 
+ / _` |/ _ \ '_ \| |/ _ \| | | |
+| (_| |  __/ |_) | | (_) | |_| |
+ \__,_|\___| .__/|_|\___/ \__, |
+           |_|            |___/ 
 </span>
 
 Running Deployer as <b><?php echo trim(shell_exec('whoami')); ?></b>.
