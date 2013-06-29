@@ -1,5 +1,5 @@
 # Deploy
-_Automated project deployment via Git and PHP._
+_Automated project deployment via Git and PHP_
 
 ## Requirements
 
