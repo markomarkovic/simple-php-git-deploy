@@ -50,7 +50,8 @@ define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
  * careful. All files that are not in the repository are going to be deleted,
- * except the ones defined in EXCLUDE section! BE CAREFUL!
+ * except the ones defined in EXCLUDE section and in .gitignore if
+ * EXCLUDE_GITIGNORE is set! BE CAREFUL!
  *
  * @var boolean
  */
@@ -71,7 +72,14 @@ define('EXCLUDE', serialize(array(
 )));
 
 /**
- * Temporary directory used to stage the code before updating the TARGET_DIR.
+ * Weather to exclude all files and directories listed in .gitignore.
+ *
+ * @var boolean
+ */
+define('EXCLUDE_GITIGNORE', false);
+
+/**
+ * Temporary directory we'll use to stage the code before the update.
  *
  * @var string Full path including the trailing slash
  */
@@ -204,6 +212,17 @@ if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
 $exclude = '';
 foreach (unserialize(EXCLUDE) as $exc) {
 	$exclude .= ' --exclude='.$exc;
+}
+if(EXCLUDE_GITIGNORE) {
+	if (!file_exists('.gitignore')) {
+		die('<div class="error">No .gitignore file found but EXCLUDE_GITIGNORE is set to true.</div>');
+	}
+	$lines = file('.gitignore');
+	foreach ($lines as $line) {
+		if (!ctype_space($line)) {
+			$exclude .= ' --exclude='.trim($line);
+		}
+	}
 }
 // Deployment command
 $commands[] = sprintf(
