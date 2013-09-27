@@ -41,7 +41,7 @@ wget -q -O /dev/null http://example.com/deploy.php?sat=YourSecretAccessTokenFrom
 
 ## Done!
 
-Next time you push the code to the repository that has a hook enabled, it's going to trigger the `deploy.php` script which is going to pull the changes and update the code on the server machine.
+Next time you push the code to the repository that has a hook enabled, it's going to trigger the `deploy.php` script which is going to pull the changes and update the code on the _server machine_.
 
 For more info, read the source of `deploy.php`.
 
