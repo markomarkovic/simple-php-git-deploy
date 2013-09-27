@@ -82,7 +82,7 @@ define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'-'.time().'/');
  *
  * @var string Full path to the file name
  */
-define('VERSION_FILE', TMP_DIR.'DEPLOYED_VERSION.txt');
+define('VERSION_FILE', TMP_DIR.'VERSION.txt');
 
 /**
  * Time limit for each command.
