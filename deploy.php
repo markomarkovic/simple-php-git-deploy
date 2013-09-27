@@ -216,6 +216,9 @@ foreach (unserialize(EXCLUDE) as $exc) {
 	$exclude .= ' --exclude='.$exc;
 }
 if (EXCLUDE_GITIGNORE) {
+	// rsync looks in the TARGET directory for the .gitignore file.
+	// This works because we're using --delete-after so the current .gitignore
+	// has already been copied to the target before the delete starts.
 	$exclude .= " --filter=':- .gitignore'";
 }
 // Deployment command
