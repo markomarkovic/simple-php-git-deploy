@@ -50,8 +50,9 @@ define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
  * careful. All files that are not in the repository are going to be deleted,
- * except the ones defined in EXCLUDE section and in .gitignore if
- * EXCLUDE_GITIGNORE is set! BE CAREFUL!
+ * except the ones defined in EXCLUDE section and the ones listed in .gitignore
+ * if EXCLUDE_GITIGNORE is set to true!
+ * BE CAREFUL!
  *
  * @var boolean
  */
