@@ -81,7 +81,11 @@ define('EXCLUDE', serialize(array(
 define('EXCLUDE_GITIGNORE', false);
 
 /**
- * Temporary directory we'll use to stage the code before the update.
+ * Temporary directory we'll use to stage the code before the update. If it
+ * already exists, script assumes that it contains an already cloned copy of the
+ * repository with the correct remote origin and only fetches changes instead of
+ * cloning the entire thing. In that case, it's also not going to be removed in
+ * the clean process.
  *
  * @var string Full path including the trailing slash
  */
