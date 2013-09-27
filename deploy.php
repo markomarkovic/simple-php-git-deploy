@@ -89,7 +89,7 @@ define('EXCLUDE_GITIGNORE', false);
  *
  * @var string Full path including the trailing slash
  */
-define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'-'.time().'/');
+define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
 
 /**
  * Output the version of the deployed code.
