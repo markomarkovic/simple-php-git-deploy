@@ -153,13 +153,11 @@ Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
 
 <?php
 // Check if the required programs are available
-$binaries = array();
 foreach (array('git', 'rsync', 'tar') as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
 	} else {
-		$binaries[$command] = $path;
 		$version = explode("\n", shell_exec($path.' --version'));
 		printf('<b>%s</b> : %s'."\n"
 			, $path
@@ -183,8 +181,7 @@ $commands = array();
 if (!is_dir(TMP_DIR)) {
 	// Clone the repository into the TMP_DIR
 	$commands[] = sprintf(
-		'%s clone --depth=1 --branch %s %s %s'
-		, $binaries['git']
+		'git clone --depth=1 --branch %s %s %s'
 		, BRANCH
 		, REMOTE_REPOSITORY
 		, TMP_DIR
@@ -193,13 +190,11 @@ if (!is_dir(TMP_DIR)) {
 	// TMP_DIR exists and hopefully already contains the correct remote origin
 	// so we'll fetch the changes and reset the contents.
 	$commands[] = sprintf(
-		'%s fetch origin %s'
-		, $binaries['git']
+		'git fetch origin %s'
 		, BRANCH
 	);
 	$commands[] = sprintf(
-		'%s --git-dir="%s.git" --work-tree="%s" reset --hard origin/%s'
-		, $binaries['git']
+		'git --git-dir="%s.git" --work-tree="%s" reset --hard origin/%s'
 		, TMP_DIR
 		, TMP_DIR
 		, BRANCH
@@ -208,15 +203,13 @@ if (!is_dir(TMP_DIR)) {
 
 // Update the submodules
 $commands[] = sprintf(
-	'%s submodule update --init --recursive'
-	, $binaries['git']
+	'git submodule update --init --recursive'
 );
 
 // Describe the deployed version
 if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 	$commands[] = sprintf(
-		'%s --git-dir="%s.git" --work-tree="%s" describe --always > %s'
-		, $binaries['git']
+		'git --git-dir="%s.git" --work-tree="%s" describe --always > %s'
 		, TMP_DIR
 		, TMP_DIR
 		, VERSION_FILE
@@ -226,8 +219,7 @@ if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 // Backup the TARGET_DIR
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
 	$commands[] = sprintf(
-		'%s czf %s/%s-%s-%s.tar.gz %s*'
-		, $binaries['tar']
+		'tar czf %s/%s-%s-%s.tar.gz %s*'
 		, BACKUP_DIR
 		, basename(TARGET_DIR)
 		, md5(TARGET_DIR)
@@ -251,8 +243,7 @@ if (EXCLUDE_GITIGNORE) {
 }
 // Deployment command
 $commands[] = sprintf(
-	'%s -rltgoDzv %s %s %s %s'
-	, $binaries['rsync']
+	'rsync -rltgoDzv %s %s %s %s'
 	, TMP_DIR
 	, TARGET_DIR
 	, (DELETE_FILES) ? '--delete-after' : ''
