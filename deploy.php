@@ -81,11 +81,22 @@ define('EXCLUDE', serialize(array(
 define('EXCLUDE_GITIGNORE', false);
 
 /**
- * Temporary directory we'll use to stage the code before the update.
+ * Temporary directory we'll use to stage the code before the update. If it
+ * already exists, script assumes that it contains an already cloned copy of the
+ * repository with the correct remote origin and only fetches changes instead of
+ * cloning the entire thing. In that case, it's also not going to be removed in
+ * the clean process.
  *
  * @var string Full path including the trailing slash
  */
-define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'-'.time().'/');
+define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
+
+/**
+ * Weather to remove the TMP_DIR after the deployment.
+ * It's useful NOT to clean up in order to only fetch changes on the next
+ * deployment.
+ */
+define('CLEAN_UP', true);
 
 /**
  * Output the version of the deployed code.
@@ -169,14 +180,31 @@ $commands = array();
 
 // ========================================[ Pre-Deployment steps ]===
 
-// Clone the repository into the TMP_DIR
-$commands[] = sprintf(
-	'%s clone --depth=1 --branch %s %s %s'
-	, $binaries['git']
-	, BRANCH
-	, REMOTE_REPOSITORY
-	, TMP_DIR
-);
+if (!is_dir(TMP_DIR)) {
+	// Clone the repository into the TMP_DIR
+	$commands[] = sprintf(
+		'%s clone --depth=1 --branch %s %s %s'
+		, $binaries['git']
+		, BRANCH
+		, REMOTE_REPOSITORY
+		, TMP_DIR
+	);
+} else {
+	// TMP_DIR exists and hopefully already contains the correct remote origin
+	// so we'll fetch the changes and reset the contents.
+	$commands[] = sprintf(
+		'%s fetch origin %s'
+		, $binaries['git']
+		, BRANCH
+	);
+	$commands[] = sprintf(
+		'%s --git-dir="%s.git" --work-tree="%s" reset --hard origin/%s'
+		, $binaries['git']
+		, TMP_DIR
+		, TMP_DIR
+		, BRANCH
+	);
+}
 
 // Update the submodules
 $commands[] = sprintf(
@@ -233,11 +261,13 @@ $commands[] = sprintf(
 
 // =======================================[ Post-Deployment steps ]===
 
-// Remove the TMP_DIR
-$commands['cleanup'] = sprintf(
-	'rm -rf %s'
-	, TMP_DIR
-);
+// Remove the TMP_DIR (depends on CLEAN_UP)
+if (CLEAN_UP) {
+	$commands['cleanup'] = sprintf(
+		'rm -rf %s'
+		, TMP_DIR
+	);
+}
 
 // =======================================[ Run the command steps ]===
 
@@ -260,13 +290,17 @@ foreach ($commands as $command) {
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
-		$tmp = shell_exec($commands['cleanup']);
 		printf('
 <div class="error">
 Error encountered!
 Stopping the script to prevent possible data loss.
 CHECK THE DATA IN YOUR TARGET DIR!
 </div>
+'
+		);
+		if (CLEAN_UP) {
+			$tmp = shell_exec($commands['cleanup']);
+			printf('
 
 
 Cleaning up temporary files ...
@@ -274,9 +308,10 @@ Cleaning up temporary files ...
 <span class="prompt">$</span> <span class="command">%s</span>
 <div class="output">%s</div>
 '
-			, htmlentities(trim($commands['cleanup']))
-			, htmlentities(trim($tmp))
-		);
+				, htmlentities(trim($commands['cleanup']))
+				, htmlentities(trim($tmp))
+			);
+		}
 		error_log(sprintf(
 			'Deployment error! %s'
 			, __FILE__
