@@ -1,8 +1,8 @@
 <?php
 /**
- * Simple PHP GIT deploy script
+ * Simple PHP Git deploy script
  *
- * Automatically deploy the code using php and git.
+ * Automatically deploy the code using PHP and Git.
  *
  * @version 1.0.8
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
@@ -11,31 +11,33 @@
 // =========================================[ Configuration start ]===
 
 /**
- * Protect the script from unauthorized access by using a secret string.
+ * Protect the script from unauthorized access by using a secret access token.
  * If it's not present in the access URL as a GET variable named `sat`
- * e.g. deploy.php?sat=Bett...s the script is going to fail.
+ * e.g. deploy.php?sat=Bett...s the script is not going to deploy.
  *
  * @var string
  */
 define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
 
 /**
- * The address of the remote GIT repository that contains the code we're
- * updating.
+ * The address of the remote Git repository that contains the code that's being
+ * deployed.
+ * If the repository is private, you'll need to use the SSH address.
  *
  * @var string
  */
 define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
 
 /**
- * Which branch are we going to use for deployment.
+ * The branch that's being deployed.
+ * Must be present in the remote repository.
  *
  * @var string
  */
 define('BRANCH', 'master');
 
 /**
- * This is where the code resides on the local machine.
+ * The location that the code is going to be deployed to.
  * Don't forget the trailing slash!
  *
  * @var string Full path including the trailing slash
@@ -44,7 +46,7 @@ define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
 
 /**
  * Weather to delete the files that are not in the repository but are on the
- * local machine.
+ * local (server) machine.
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
  * careful. All files that are not in the repository are going to be deleted,
@@ -69,7 +71,7 @@ define('EXCLUDE', serialize(array(
 )));
 
 /**
- * Temporary directory we'll use to stage the code before the update.
+ * Temporary directory used to stage the code before updating the TARGET_DIR.
  *
  * @var string Full path including the trailing slash
  */
@@ -104,7 +106,7 @@ define('BACKUP_DIR', false);
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Simple PHP GIT deploy script</title>
+	<title>Simple PHP Git deploy script</title>
 	<style>
 body { padding: 0 1em; background: #222; color: #fff; }
 h2, .error { color: #c33; }
@@ -129,12 +131,12 @@ Checking the environment ...
 Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
 
 <?php
-// Check if the needed programs are available
+// Check if the required programs are available
 $binaries = array();
 foreach (array('git', 'rsync', 'tar') as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
-		die(sprintf('<div class="error"><b>%s</b> not available. It need to be installed on the server for this script to work.</div>', $command));
+		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
 	} else {
 		$binaries[$command] = $path;
 		$version = explode("\n", shell_exec($path.' --version'));
