@@ -73,6 +73,7 @@ define('EXCLUDE', serialize(array(
 
 /**
  * Weather to exclude all files and directories listed in .gitignore.
+ * Only the .gitignore file in the project root directory is going to be used.
  *
  * @var boolean
  */
@@ -213,16 +214,8 @@ $exclude = '';
 foreach (unserialize(EXCLUDE) as $exc) {
 	$exclude .= ' --exclude='.$exc;
 }
-if(EXCLUDE_GITIGNORE) {
-	if (!file_exists('.gitignore')) {
-		die('<div class="error">No .gitignore file found but EXCLUDE_GITIGNORE is set to true.</div>');
-	}
-	$lines = file('.gitignore');
-	foreach ($lines as $line) {
-		if (!ctype_space($line)) {
-			$exclude .= ' --exclude='.trim($line);
-		}
-	}
+if (EXCLUDE_GITIGNORE) {
+	$exclude .= " --filter=':- .gitignore'";
 }
 // Deployment command
 $commands[] = sprintf(
