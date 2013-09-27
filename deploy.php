@@ -92,6 +92,13 @@ define('EXCLUDE_GITIGNORE', false);
 define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
 
 /**
+ * Weather to remove the TMP_DIR after the deployment.
+ * It's useful NOT to clean up in order to only fetch changes on the next
+ * deployment.
+ */
+define('CLEAN_UP', true);
+
+/**
  * Output the version of the deployed code.
  *
  * @var string Full path to the file name
@@ -237,11 +244,13 @@ $commands[] = sprintf(
 
 // =======================================[ Post-Deployment steps ]===
 
-// Remove the TMP_DIR
-$commands['cleanup'] = sprintf(
-	'rm -rf %s'
-	, TMP_DIR
-);
+// Remove the TMP_DIR (depends on CLEAN_UP)
+if (CLEAN_UP) {
+	$commands['cleanup'] = sprintf(
+		'rm -rf %s'
+		, TMP_DIR
+	);
+}
 
 // =======================================[ Run the command steps ]===
 
@@ -264,13 +273,17 @@ foreach ($commands as $command) {
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
-		$tmp = shell_exec($commands['cleanup']);
 		printf('
 <div class="error">
 Error encountered!
 Stopping the script to prevent possible data loss.
 CHECK THE DATA IN YOUR TARGET DIR!
 </div>
+'
+		);
+		if (CLEAN_UP) {
+			$tmp = shell_exec($commands['cleanup']);
+			printf('
 
 
 Cleaning up temporary files ...
@@ -278,9 +291,10 @@ Cleaning up temporary files ...
 <span class="prompt">$</span> <span class="command">%s</span>
 <div class="output">%s</div>
 '
-			, htmlentities(trim($commands['cleanup']))
-			, htmlentities(trim($tmp))
-		);
+				, htmlentities(trim($commands['cleanup']))
+				, htmlentities(trim($tmp))
+			);
+		}
 		error_log(sprintf(
 			'Deployment error! %s'
 			, __FILE__
