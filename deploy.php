@@ -180,14 +180,31 @@ $commands = array();
 
 // ========================================[ Pre-Deployment steps ]===
 
-// Clone the repository into the TMP_DIR
-$commands[] = sprintf(
-	'%s clone --depth=1 --branch %s %s %s'
-	, $binaries['git']
-	, BRANCH
-	, REMOTE_REPOSITORY
-	, TMP_DIR
-);
+if (!is_dir(TMP_DIR)) {
+	// Clone the repository into the TMP_DIR
+	$commands[] = sprintf(
+		'%s clone --depth=1 --branch %s %s %s'
+		, $binaries['git']
+		, BRANCH
+		, REMOTE_REPOSITORY
+		, TMP_DIR
+	);
+} else {
+	// TMP_DIR exists and hopefully already contains the correct remote origin
+	// so we'll fetch the changes and reset the contents.
+	$commands[] = sprintf(
+		'%s fetch origin %s'
+		, $binaries['git']
+		, BRANCH
+	);
+	$commands[] = sprintf(
+		'%s --git-dir="%s.git" --work-tree="%s" reset --hard origin/%s'
+		, $binaries['git']
+		, TMP_DIR
+		, TMP_DIR
+		, BRANCH
+	);
+}
 
 // Update the submodules
 $commands[] = sprintf(
