@@ -28,7 +28,7 @@ _Automatically deploy the code using PHP and Git._
  1. Enter the URL to your deployment script e.g. `http://example.com/deploy.php?sat=YourSecretAccessTokenFromDeployFile`
  1. Click **Save**
 
-### Generic GIT
+### Generic Git
 
  1. Configure the SSH keys
  1. Add a executable `.git/hooks/post_receive` script that calls the script e.g.
@@ -44,6 +44,11 @@ wget -q -O /dev/null http://example.com/deploy.php?sat=YourSecretAccessTokenFrom
 Next time you push the code to the repository that has a hook enabled, it's going to trigger the `deploy.php` script which is going to pull the changes and update the code on the _server machine_.
 
 For more info, read the source of `deploy.php`.
+
+## Tips'n'Tricks
+
+ * Because `rsync` is used for deployment, the `TARGET_DIR` doesn't have to be on the same server that the script is running e.g. `define('TARGET_DIR', 'username@example.com:/full/path/to/target_dir/');` is goint to work as long as the user has the right SSH keys and access permissions.
+ * You can have multiple scripts with different configurations. Simply rename the `deploy.php` to something else, for example `deploy_master.php` and `deploy_develop.php` and configure them separately.
 
 ---
 
