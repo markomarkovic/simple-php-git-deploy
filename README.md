@@ -13,8 +13,11 @@ _Automatically deploy the code using PHP and Git._
 
 ## Usage
 
- * Configure `deploy.php` and put it somewhere that's accessible from the
-   Internet.
+ * Configure the script and put it somewhere that's accessible from the
+   Internet. The prefered way to configure it is to use `deploy-config.php` file.
+   Rename `deploy-config.example.php` to `deploy-config.php` and edit the
+   configuration options there. That way, you won't have to edit the configuration
+   again if you download the new version of `deploy.php`.
  * Configure your git repository to call this script when the code is updated.
    The instructions for GitHub and Bitbucket are below.
 
@@ -61,11 +64,13 @@ For more info, read the source of `deploy.php`.
 
  * Because `rsync` is used for deployment, the `TARGET_DIR` doesn't have to be
    on the same server that the script is running e.g. `define('TARGET_DIR',
-   'username@example.com:/full/path/to/target_dir/');` is goint to work as long
+   'username@example.com:/full/path/to/target_dir/');` is going to work as long
    as the user has the right SSH keys and access permissions.
  * You can have multiple scripts with different configurations. Simply rename
    the `deploy.php` to something else, for example `deploy_master.php` and
-   `deploy_develop.php` and configure them separately.
+   `deploy_develop.php` and configure them separately. In that case, the
+   configuration files need to be named `deploy_master-config.php` and
+   `deploy_develop-config.php` respectively.
 
 ---
 
