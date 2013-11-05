@@ -4,11 +4,20 @@
  *
  * Automatically deploy the code using PHP and Git.
  *
- * @version 1.1.0
+ * @version 1.1.1
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
 // =========================================[ Configuration start ]===
+
+/**
+ * It's preferable to configure the script using `deploy-config.php` file.
+ *
+ * Rename `deploy-config.example.php` to `deploy-config.php` and edit the
+ * configuration options there instead of here. That way, you won't have to edit
+ * the configuration again if you download the new version of `deploy.php`.
+ */
+if (file_exists(basename(__FILE__, '.php').'-config.php')) require_once basename(__FILE__, '.php').'-config.php';
 
 /**
  * Protect the script from unauthorized access by using a secret access token.
@@ -26,7 +35,7 @@ define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
  *
  * @var string
  */
-define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
+if (!defined('REMOTE_REPOSITORY')) define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
 
 /**
  * The branch that's being deployed.
@@ -34,7 +43,7 @@ define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-dep
  *
  * @var string
  */
-define('BRANCH', 'master');
+if (!defined('BRANCH')) define('BRANCH', 'master');
 
 /**
  * The location that the code is going to be deployed to.
@@ -42,7 +51,7 @@ define('BRANCH', 'master');
  *
  * @var string Full path including the trailing slash
  */
-define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
+if (!defined('TARGET_DIR')) define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
 
 /**
  * Weather to delete the files that are not in the repository but are on the
@@ -56,7 +65,7 @@ define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
  *
  * @var boolean
  */
-define('DELETE_FILES', false);
+if (!defined('DELETE_FILES')) define('DELETE_FILES', false);
 
 /**
  * The directories and files that are to be excluded when updating the code.
@@ -66,7 +75,7 @@ define('DELETE_FILES', false);
  *
  * @var serialized array of strings
  */
-define('EXCLUDE', serialize(array(
+if (!defined('EXCLUDE')) define('EXCLUDE', serialize(array(
 	'.git',
 	'webroot/uploads',
 	'app/config/database.php',
@@ -78,7 +87,7 @@ define('EXCLUDE', serialize(array(
  *
  * @var boolean
  */
-define('EXCLUDE_GITIGNORE', false);
+if (!defined('EXCLUDE_GITIGNORE')) define('EXCLUDE_GITIGNORE', false);
 
 /**
  * Temporary directory we'll use to stage the code before the update. If it
@@ -88,28 +97,28 @@ define('EXCLUDE_GITIGNORE', false);
  *
  * @var string Full path including the trailing slash
  */
-define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
+if (!defined('TMP_DIR')) define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
 
 /**
  * Weather to remove the TMP_DIR after the deployment.
  * It's useful NOT to clean up in order to only fetch changes on the next
  * deployment.
  */
-define('CLEAN_UP', true);
+if (!defined('CLEAN_UP')) define('CLEAN_UP', true);
 
 /**
  * Output the version of the deployed code.
  *
  * @var string Full path to the file name
  */
-define('VERSION_FILE', TMP_DIR.'VERSION.txt');
+if (!defined('VERSION_FILE')) define('VERSION_FILE', TMP_DIR.'VERSION.txt');
 
 /**
  * Time limit for each command.
  *
  * @var int Time in seconds
  */
-define('TIME_LIMIT', 30);
+if (!defined('TIME_LIMIT')) define('TIME_LIMIT', 30);
 
 /**
  * OPTIONAL
@@ -117,7 +126,7 @@ define('TIME_LIMIT', 30);
  *
  * @var string Full backup directory path e.g. '/tmp/'
  */
-define('BACKUP_DIR', false);
+if (!defined('BACKUP_DIR')) define('BACKUP_DIR', false);
 
 // ===========================================[ Configuration end ]===
 
