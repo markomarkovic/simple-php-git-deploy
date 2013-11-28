@@ -4,7 +4,7 @@
  *
  * Automatically deploy the code using PHP and Git.
  *
- * @version 1.1.1
+ * @version 1.1.2
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
@@ -26,7 +26,7 @@ if (file_exists(basename(__FILE__, '.php').'-config.php')) require_once basename
  *
  * @var string
  */
-define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
+if (!defined('SECRET_ACCESS_TOKEN')) define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
 
 /**
  * The address of the remote Git repository that contains the code that's being
