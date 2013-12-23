@@ -50,8 +50,7 @@ define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
  * careful. All files that are not in the repository are going to be deleted,
- * except the ones defined in EXCLUDE section and the ones listed in .gitignore
- * if EXCLUDE_GITIGNORE is set to true!
+ * except the ones defined in EXCLUDE section.
  * BE CAREFUL!
  *
  * @var boolean
@@ -71,14 +70,6 @@ define('EXCLUDE', serialize(array(
 	'webroot/uploads',
 	'app/config/database.php',
 )));
-
-/**
- * Weather to exclude all files and directories listed in .gitignore.
- * Only the .gitignore file in the project root directory is going to be used.
- *
- * @var boolean
- */
-define('EXCLUDE_GITIGNORE', false);
 
 /**
  * Temporary directory we'll use to stage the code before the update. If it
