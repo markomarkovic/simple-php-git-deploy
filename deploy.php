@@ -181,7 +181,10 @@ Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
 
 <?php
 // Check if the required programs are available
-$requiredBinaries = array('git', 'rsync', 'tar');
+$requiredBinaries = array('git', 'rsync');
+if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
+	$requiredBinaries[] = 'tar';
+}
 if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	$requiredBinaries[] = 'composer';
 }
