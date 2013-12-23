@@ -186,14 +186,14 @@ if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$requiredBinaries[] = 'tar';
 }
 if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
-	$requiredBinaries[] = 'composer';
+	$requiredBinaries[] = 'composer --no-ansi';
 }
 foreach ($requiredBinaries as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
 	} else {
-		$version = explode("\n", shell_exec($path.' --version'));
+		$version = explode("\n", shell_exec($command.' --version'));
 		printf('<b>%s</b> : %s'."\n"
 			, $path
 			, $version[0]
