@@ -263,6 +263,15 @@ if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
 	);
 }
 
+// Invoke composer
+if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
+	$commands[] = sprintf(
+		'composer --no-ansi --no-interaction --no-progress --working-dir=%s install %s'
+		, TMP_DIR
+		, (defined('COMPOSER_OPTIONS')) ? COMPOSER_OPTIONS : ''
+	);
+}
+
 // ==================================================[ Deployment ]===
 
 // Compile exclude parameters
