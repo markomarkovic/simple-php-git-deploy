@@ -128,6 +128,26 @@ if (!defined('TIME_LIMIT')) define('TIME_LIMIT', 30);
  */
 if (!defined('BACKUP_DIR')) define('BACKUP_DIR', false);
 
+/**
+ * OPTIONAL
+ * Weather to invoke composer after the repository is cloned or changes are
+ * fetched. Composer needs to be available on the server machine, installed
+ * globaly (as `composer`). See http://getcomposer.org/doc/00-intro.md#globally
+ *
+ * @var boolean Weather to use composer or not
+ * @link http://getcomposer.org/
+ */
+if (!defined('USE_COMPOSER')) define('USE_COMPOSER', false);
+
+/**
+ * OPTIONAL
+ * The options that the composer is going to use.
+ *
+ * @var string Composer options
+ * @link http://getcomposer.org/doc/03-cli.md#install
+ */
+if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
+
 // ===========================================[ Configuration end ]===
 
 ?>
