@@ -216,7 +216,9 @@ if (!is_dir(TMP_DIR)) {
 	// TMP_DIR exists and hopefully already contains the correct remote origin
 	// so we'll fetch the changes and reset the contents.
 	$commands[] = sprintf(
-		'git fetch origin %s'
+		'git --git-dir="%s.git" --work-tree="%s" fetch origin %s'
+		, TMP_DIR
+		, TMP_DIR
 		, BRANCH
 	);
 	$commands[] = sprintf(
