@@ -222,10 +222,9 @@ if (!is_dir(TMP_DIR)) {
 		, BRANCH
 	);
 	$commands[] = sprintf(
-		'git --git-dir="%s.git" --work-tree="%s" reset --hard origin/%s'
+		'git --git-dir="%s.git" --work-tree="%s" reset --hard FETCH_HEAD'
 		, TMP_DIR
 		, TMP_DIR
-		, BRANCH
 	);
 }
 
