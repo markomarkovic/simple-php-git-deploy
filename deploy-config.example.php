@@ -50,8 +50,7 @@ define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
  * careful. All files that are not in the repository are going to be deleted,
- * except the ones defined in EXCLUDE section and the ones listed in .gitignore
- * if EXCLUDE_GITIGNORE is set to true!
+ * except the ones defined in EXCLUDE section.
  * BE CAREFUL!
  *
  * @var boolean
@@ -71,14 +70,6 @@ define('EXCLUDE', serialize(array(
 	'webroot/uploads',
 	'app/config/database.php',
 )));
-
-/**
- * Weather to exclude all files and directories listed in .gitignore.
- * Only the .gitignore file in the project root directory is going to be used.
- *
- * @var boolean
- */
-define('EXCLUDE_GITIGNORE', false);
 
 /**
  * Temporary directory we'll use to stage the code before the update. If it
@@ -113,8 +104,28 @@ define('TIME_LIMIT', 30);
 
 /**
  * OPTIONAL
- * Backup the TARGET_DIR into BACKUP_DIR before deployment
+ * Backup the TARGET_DIR into BACKUP_DIR before deployment.
  *
  * @var string Full backup directory path e.g. '/tmp/'
  */
 define('BACKUP_DIR', false);
+
+/**
+ * OPTIONAL
+ * Weather to invoke composer after the repository is cloned or changes are
+ * fetched. Composer needs to be available on the server machine, installed
+ * globaly (as `composer`). See http://getcomposer.org/doc/00-intro.md#globally
+ *
+ * @var boolean Weather to use composer or not
+ * @link http://getcomposer.org/
+ */
+define('USE_COMPOSER', false);
+
+/**
+ * OPTIONAL
+ * The options that the composer is going to use.
+ *
+ * @var string Composer options
+ * @link http://getcomposer.org/doc/03-cli.md#install
+ */
+define('COMPOSER_OPTIONS', '--no-dev');

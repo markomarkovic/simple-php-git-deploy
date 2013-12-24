@@ -3,8 +3,11 @@ _Automatically deploy the code using PHP and Git._
 
 ## Requirements
 
-* `git`, `rsync`, and `tar` binaries are required on the server that's running
-  the script (_server machine_).
+* `git` and `rsync` are required on the server that's running the script
+  (_server machine_).
+  - Optionally, `tar` is required for backup functionality (`BACKUP_DIR` option).
+  - Optionally, `composer` is required for composer functionality (`USE_COMPOSER`
+  option).
 * The system user running PHP (e.g. `www-data`) needs to have the necessary
   access permissions for the `TMP_DIR` and `TARGET_DIR` locations on
   the _server machine_.
