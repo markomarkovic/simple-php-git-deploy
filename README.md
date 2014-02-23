@@ -29,10 +29,12 @@ _Automatically deploy the code using PHP and Git._
  1. _(This step is only needed for private repositories)_ Go to
     `https://github.com/USERNAME/REPOSITORY/settings/keys` and add your server
     SSH key
- 1. Go to `https://github.com/USERNAME/REPOSITORY/admin/hooks`
- 1. Select the **WebHook URLs** service hook
- 1. Enter the URL to your deployment script e.g. `http://example.com/deploy.php?sat=YourSecretAccessTokenFromDeployFile`
- 1. Click **Update Settings**
+ 1. Go to `https://github.com/USERNAME/REPOSITORY/settings/hooks`
+ 1. Click **Add webhook** in the **Webhooks** panel
+ 1. Enter the **Payload URL** for your deployment script e.g. `http://example.com/deploy.php?sat=YourSecretAccessTokenFromDeployFile`
+ 1. _Optional_ Choose which events should trigger the deployment
+ 1. Make sure that the **Active** checkbox is checked
+ 1. Click **Add webhook**
 
 ### Bitbucket
 
