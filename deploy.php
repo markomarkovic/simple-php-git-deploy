@@ -283,7 +283,7 @@ foreach (unserialize(EXCLUDE) as $exc) {
 }
 // Deployment command
 $commands[] = sprintf(
-	'rsync -rltgoDzv %s %s %s %s'
+	'rsync -rltgoDzvO %s %s %s %s'
 	, TMP_DIR
 	, TARGET_DIR
 	, (DELETE_FILES) ? '--delete-after' : ''
