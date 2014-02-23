@@ -141,6 +141,10 @@ if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
 
 // ===========================================[ Configuration end ]===
 
+// If there's authorization error, set the correct HTTP header.
+if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
+	header('HTTP/1.0 403 Forbidden');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
