@@ -54,7 +54,7 @@ if (!defined('BRANCH')) define('BRANCH', 'master');
 if (!defined('TARGET_DIR')) define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
 
 /**
- * Weather to delete the files that are not in the repository but are on the
+ * Whether to delete the files that are not in the repository but are on the
  * local (server) machine.
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
@@ -91,7 +91,7 @@ if (!defined('EXCLUDE')) define('EXCLUDE', serialize(array(
 if (!defined('TMP_DIR')) define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
 
 /**
- * Weather to remove the TMP_DIR after the deployment.
+ * Whether to remove the TMP_DIR after the deployment.
  * It's useful NOT to clean up in order to only fetch changes on the next
  * deployment.
  */
@@ -121,11 +121,11 @@ if (!defined('BACKUP_DIR')) define('BACKUP_DIR', false);
 
 /**
  * OPTIONAL
- * Weather to invoke composer after the repository is cloned or changes are
+ * Whether to invoke composer after the repository is cloned or changes are
  * fetched. Composer needs to be available on the server machine, installed
  * globaly (as `composer`). See http://getcomposer.org/doc/00-intro.md#globally
  *
- * @var boolean Weather to use composer or not
+ * @var boolean Whether to use composer or not
  * @link http://getcomposer.org/
  */
 if (!defined('USE_COMPOSER')) define('USE_COMPOSER', false);
@@ -150,6 +150,7 @@ if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCES
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	<meta name="robots" content="noindex">
 	<title>Simple PHP Git deploy script</title>
 	<style>
 body { padding: 0 1em; background: #222; color: #fff; }
