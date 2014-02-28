@@ -9,7 +9,7 @@
  * That way, you won't have to edit the configuration again if you download the
  * new version of `deploy.php`.
  *
- * @version 1.2.1
+ * @version 1.2.2
  */
 
 /**
@@ -47,7 +47,7 @@ define('BRANCH', 'master');
 define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
 
 /**
- * Weather to delete the files that are not in the repository but are on the
+ * Whether to delete the files that are not in the repository but are on the
  * local (server) machine.
  *
  * !!! WARNING !!! This can lead to a serious loss of data if you're not
@@ -84,7 +84,7 @@ define('EXCLUDE', serialize(array(
 define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
 
 /**
- * Weather to remove the TMP_DIR after the deployment.
+ * Whether to remove the TMP_DIR after the deployment.
  * It's useful NOT to clean up in order to only fetch changes on the next
  * deployment.
  */
@@ -114,11 +114,11 @@ define('BACKUP_DIR', false);
 
 /**
  * OPTIONAL
- * Weather to invoke composer after the repository is cloned or changes are
+ * Whether to invoke composer after the repository is cloned or changes are
  * fetched. Composer needs to be available on the server machine, installed
  * globaly (as `composer`). See http://getcomposer.org/doc/00-intro.md#globally
  *
- * @var boolean Weather to use composer or not
+ * @var boolean Whether to use composer or not
  * @link http://getcomposer.org/
  */
 define('USE_COMPOSER', false);
