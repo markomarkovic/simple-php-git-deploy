@@ -10,6 +10,19 @@
 
 // =========================================[ Configuration start ]===
 
+/** SITE Name to get the right config file **/
+if (isset($argv)) {
+	$_GET['site'] = $argv[1];
+	$_GET['sat'] = $argv[2];
+}
+
+if (isset($_GET['site']) && strlen($_GET['site']) > 0) {
+	define('SITE_ENV_NAME',preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET['site']));
+} else {
+	echo "No Deployment Site and Environment defined\n";
+	exit;
+}
+
 /**
  * It's preferable to configure the script using `deploy-config.php` file.
  *
@@ -17,7 +30,8 @@
  * configuration options there instead of here. That way, you won't have to edit
  * the configuration again if you download the new version of `deploy.php`.
  */
-if (file_exists(basename(__FILE__, '.php').'-config.php')) require_once basename(__FILE__, '.php').'-config.php';
+if (file_exists(SITE_ENV_NAME."-".basename(__FILE__, '.php').'-config.php'))
+	require_once './'.SITE_ENV_NAME."-".basename(__FILE__, '.php').'-config.php';
 
 /**
  * Protect the script from unauthorized access by using a secret access token.
@@ -26,7 +40,8 @@ if (file_exists(basename(__FILE__, '.php').'-config.php')) require_once basename
  *
  * @var string
  */
-if (!defined('SECRET_ACCESS_TOKEN')) define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
+if (!defined('SECRET_ACCESS_TOKEN'))
+	define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
 
 /**
  * The address of the remote Git repository that contains the code that's being
@@ -35,7 +50,8 @@ if (!defined('SECRET_ACCESS_TOKEN')) define('SECRET_ACCESS_TOKEN', 'BetterChange
  *
  * @var string
  */
-if (!defined('REMOTE_REPOSITORY')) define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
+if (!defined('REMOTE_REPOSITORY'))
+	define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
 
 /**
  * The branch that's being deployed.
@@ -145,37 +161,16 @@ if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 	header('HTTP/1.0 403 Forbidden');
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="robots" content="noindex">
-	<title>Simple PHP Git deploy script</title>
-	<style>
-body { padding: 0 1em; background: #222; color: #fff; }
-h2, .error { color: #c33; }
-.prompt { color: #6be234; }
-.command { color: #729fcf; }
-.output { color: #999; }
-	</style>
-</head>
-<body>
-<?php
+
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN) {
-	die('<h2>ACCESS DENIED!</h2>');
+	die('ACCESS DENIED!\n');
 }
 if (SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
-	die("<h2>You're suffering the consequences!<br>Change the SECRET_ACCESS_TOKEN from it's default value!</h2>");
+	die("You're suffering the consequences!\nChange the SECRET_ACCESS_TOKEN from it's default value!\n\n");
 }
-?>
-<pre>
 
-Checking the environment ...
+echo "Checking the environment ... \n\n Running as " . trim(shell_exec('whoami')) . "\n\n";
 
-Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
-
-<?php
 // Check if the required programs are available
 $requiredBinaries = array('git', 'rsync');
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
@@ -187,23 +182,20 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 foreach ($requiredBinaries as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
-		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
+		die(sprintf('%s not available. It needs to be installed on the server for this script to work.\n', $command));
 	} else {
 		$version = explode("\n", shell_exec($command.' --version'));
-		printf('<b>%s</b> : %s'."\n"
+		printf('%s : %s'."\n"
 			, $path
 			, $version[0]
 		);
 	}
 }
-?>
 
-Environment OK.
+echo "Environment OK.\n\n";
+echo "Deploying ", REMOTE_REPOSITORY, BRANCH."\n";
+echo "to ", TARGET_DIR, " ... \n\n";
 
-Deploying <?php echo REMOTE_REPOSITORY; ?> <?php echo BRANCH."\n"; ?>
-to        <?php echo TARGET_DIR; ?> ...
-
-<?php
 // The commands
 $commands = array();
 
@@ -305,10 +297,7 @@ foreach ($commands as $command) {
 	$tmp = array();
 	exec($command.' 2>&1', $tmp, $return_code); // Execute the command
 	// Output the result
-	printf('
-<span class="prompt">$</span> <span class="command">%s</span>
-<div class="output">%s</div>
-'
+	printf("\$ %s \n%s\n"
 		, htmlentities(trim($command))
 		, htmlentities(trim(implode("\n", $tmp)))
 	);
@@ -316,38 +305,21 @@ foreach ($commands as $command) {
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
-		printf('
-<div class="error">
-Error encountered!
-Stopping the script to prevent possible data loss.
-CHECK THE DATA IN YOUR TARGET DIR!
-</div>
-'
-		);
+		printf("Error encountered!\nStopping the script to prevent possible data loss.\nCHECK THE DATA IN YOUR TARGET DIR!\n\n");
 		if (CLEAN_UP) {
 			$tmp = shell_exec($commands['cleanup']);
-			printf('
-
-
-Cleaning up temporary files ...
-
-<span class="prompt">$</span> <span class="command">%s</span>
-<div class="output">%s</div>
-'
+			printf("Cleaning up temporary files ...\n\$ %s\n%s\n\n"
 				, htmlentities(trim($commands['cleanup']))
 				, htmlentities(trim($tmp))
 			);
 		}
 		error_log(sprintf(
-			'Deployment error! %s'
+			"Deployment error! %s\n\n"
 			, __FILE__
 		));
 		break;
 	}
 }
-?>
 
-Done.
-</pre>
-</body>
-</html>
+echo "Done.\n\n";
+?>
