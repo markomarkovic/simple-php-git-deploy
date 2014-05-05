@@ -9,7 +9,7 @@
  * That way, you won't have to edit the configuration again if you download the
  * new version of `deploy.php`.
  *
- * @version 1.2.2
+ * @version 1.2.2-multideployments
  */
 
 /**
@@ -131,3 +131,46 @@ define('USE_COMPOSER', false);
  * @link http://getcomposer.org/doc/03-cli.md#install
  */
 define('COMPOSER_OPTIONS', '--no-dev');
+
+/**
+ * If you want to deploy multiple branches to different locations you can
+ * create multiple configurations here. See the relevant constant documentation
+ * for the exact meaning of the options. You must use the above constant for the
+ * default/production configuration (e.g. master branch)
+ *
+ * You can safely leave out a specific configuration option for a branch (e.g. TARGET_DIR).
+ * If so the default options from the constant will be used
+ *
+ * The branch name can have PCRE regular expressions. The configuration options
+ * can use the matching groups. E.g. branch name 'feature-(\w+)' and TARGET_DIR
+ * '/tmp/deployments/experimental-features/$1'
+ *
+ * Use the GET 'branch' parameter to select a single branch to deploy. By default
+ * All branches which have configuration here will be deployed.
+ *
+ * Array structure is as follows:
+ * <code>
+ * array(
+ *		'BRANCH' => array(
+ *			'TARGET_DIR'        => '/tmp/simple-php-git-deploy/'
+ *			'DELETE_FILES'      => false
+ *			'EXCLUDE'           => array('.git', 'webroot/uploads', 'app/config/database.php')
+ *			'COMPOSER_OPTIONS'  => '--no-dev'
+ *     )
+ * )
+ * </code>
+ * @var (mixed[])[]
+ */
+$DEPLOYMENTS = array(
+	BRANCH => array(
+		'TARGET_DIR'		=> TARGET_DIR,
+		'DELETE_FILES'		=> DELETE_FILES,
+		'EXCLUDE'			=> EXCLUDE,
+		'COMPOSER_OPTIONS'	=> COMPOSER_OPTIONS,
+	),
+	/*
+	'development-branch' => array(
+		'TARGET_DIR'        => '/alternate/path',
+	),
+	*/
+ );
