@@ -334,7 +334,7 @@ if (!is_dir(TMP_DIR)) {
 	// TMP_DIR exists and hopefully already contains the correct remote origin
 	// so we'll fetch the changes and reset so checkouts don't give errors
 	if(execute_command(sprintf(
-		'git --git-dir="%s.git" --work-tree="%s" fetch origin'
+		'git --git-dir="%s.git" --work-tree="%s" fetch -p origin'
 		, TMP_DIR
 		, TMP_DIR
 	)) === false) {
