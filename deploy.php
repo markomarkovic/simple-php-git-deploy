@@ -4,7 +4,7 @@
  *
  * Automatically deploy the code using PHP and Git.
  *
- * @version 1.2.2
+ * @version 1.2.2-multideployments
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
@@ -139,7 +139,116 @@ if (!defined('USE_COMPOSER')) define('USE_COMPOSER', false);
  */
 if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
 
+/**
+ * If you want to deploy multiple branches to different locations you can
+ * create multiple configurations here. See the relevant constant documentation
+ * for the exact meaning of the options. You must use the above constant for the
+ * default/production configuration (e.g. master branch)
+ *
+ * You can safely leave out a specific configuration option for a branch (e.g. TARGET_DIR).
+ * If so the default options from the constant will be used
+ *
+ * The branch name can have PCRE regular expressions. The configuration options
+ * can use the matching groups. E.g. branch name 'feature-(\w+)' and TARGET_DIR
+ * '/tmp/deployments/experimental-features/$1'
+ *
+ * Use the GET 'branch' parameter to select a single branch to deploy. By default
+ * All branches which have configuration here will be deployed. 
+ *
+ * Array structure is as follows:
+ * <code>
+ * array(
+ *		'BRANCH' => array(
+ *			'TARGET_DIR'        => '/tmp/simple-php-git-deploy/'
+ *			'DELETE_FILES'      => false
+ *			'EXCLUDE'           => array('.git', 'webroot/uploads', 'app/config/database.php')
+ *			'COMPOSER_OPTIONS'  => '--no-dev'
+ *     )
+ * )
+ * </code>
+ * @var (mixed[])[]
+ */
+ if(!isset($DEPLOYMENTS)) $DEPLOYMENTS = array(
+	BRANCH => array(
+		'TARGET_DIR'        => TARGET_DIR,
+		'DELETE_FILES'      => DELETE_FILES,
+		'EXCLUDE'           => EXCLUDE,
+		'COMPOSER_OPTIONS'  => COMPOSER_OPTIONS,
+	),
+ );
+
 // ===========================================[ Configuration end ]===
+
+// ===========================================[ Function definitions start ]===
+
+/**
+* Execute a command and print the output
+* @param string $command the command to be executed
+* @param string $error_recovery_commands Command to be executed on error
+* @param boolean $return_output whether to return output as a string
+* @return (boolean|string[]) true or output as string array depending on $return_output when command was succesfully executed, false on error
+*/
+function execute_command($command, $error_recovery_command = "", $return_output = false) {
+	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
+	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
+		chdir(TMP_DIR); // Ensure that we're in the right directory
+	}
+	$output = array();
+	exec($command.' 2>&1', $output, $return_code); // Execute the command
+	// Output the result
+	printf(
+        "    <span class=\"prompt\">$</span> <span class=\"command\">%s</span>\n\n"
+        , htmlentities(trim($command))
+    );
+    
+    if(!empty($output)) {
+        printf("<div class=\"output\">%s\n</div>\n"
+        , htmlentities(implode("\n",array_map("trim",$output)))
+        );
+    }
+	flush(); // Try to output everything as it happens
+
+	// Error handling and cleanup
+	if ($return_code !== 0) {
+		printf('
+	<div class="error">
+	Error encountered!
+	Stopping the script to prevent possible data loss.
+	CHECK THE DATA IN YOUR TARGET DIR!
+	</div>
+	'
+		);
+		if ($error_recovery_command != "") {
+			$tmp = shell_exec($error_recovery_command);
+			printf('
+
+
+	Cleaning up temporary files ...
+
+	<span class="prompt">$</span> <span class="command">%s</span>
+	<div class="output">%s</div>
+	'
+			, htmlentities(trim($error_recovery_command))
+			, htmlentities(trim($tmp))
+			);
+		}
+		error_log(sprintf(
+		'Deployment error! %s'
+		, __FILE__
+		));
+		return false;
+	}else {
+        if($return_output) {
+            return $output;
+        }else {
+            return true;
+        }
+	}
+}
+
+// ===========================================[ Function definitions end ]===
+
+// ===========================================[ Start of script ]===
 
 // If there's authorization error, set the correct HTTP header.
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
@@ -158,6 +267,7 @@ h2, .error { color: #c33; }
 .prompt { color: #6be234; }
 .command { color: #729fcf; }
 .output { color: #999; }
+.output_variable { color: #ffcc11;}
 	</style>
 </head>
 <body>
@@ -199,150 +309,203 @@ foreach ($requiredBinaries as $command) {
 ?>
 
 Environment OK.
-
-Deploying <?php echo REMOTE_REPOSITORY; ?> <?php echo BRANCH."\n"; ?>
-to        <?php echo TARGET_DIR; ?> ...
+Repository: <span class="output_variable"><?php echo REMOTE_REPOSITORY; ?></span>
 
 <?php
-// The commands
-$commands = array();
-
 // ========================================[ Pre-Deployment steps ]===
+if(!isset($_GET['branch'])) {
+	if(count($DEPLOYMENTS) > 1) {
+		echo "You can select which branch to deploy by appending &amp;branch=xxx to the url.\n";
+		echo "Will now do all all deployments\n\n";
+	}
+}
 
+// Make sure the local repository is available and up-to-date
 if (!is_dir(TMP_DIR)) {
 	// Clone the repository into the TMP_DIR
-	$commands[] = sprintf(
-		'git clone --depth=1 --branch %s %s %s'
-		, BRANCH
+	if(execute_command(sprintf(
+		'git clone --depth=1 %s %s'
 		, REMOTE_REPOSITORY
 		, TMP_DIR
-	);
+	)) === false) {
+        die(); // Error will be displayed in execute_command
+    }
 } else {
 	// TMP_DIR exists and hopefully already contains the correct remote origin
-	// so we'll fetch the changes and reset the contents.
-	$commands[] = sprintf(
-		'git --git-dir="%s.git" --work-tree="%s" fetch origin %s'
+	// so we'll fetch the changes and reset so checkouts don't give errors
+	if(execute_command(sprintf(
+		'git --git-dir="%s.git" --work-tree="%s" fetch -p origin'
 		, TMP_DIR
 		, TMP_DIR
-		, BRANCH
-	);
-	$commands[] = sprintf(
+	)) === false) {
+        die(); // Error will be displayed in execute_command
+    }
+	if(!execute_command(sprintf(
 		'git --git-dir="%s.git" --work-tree="%s" reset --hard FETCH_HEAD'
 		, TMP_DIR
 		, TMP_DIR
-	);
+	))) {
+        die(); // Error will be displayed in execute_command
+    }
 }
 
-// Update the submodules
-$commands[] = sprintf(
-	'git submodule update --init --recursive'
-);
-
-// Describe the deployed version
-if (defined('VERSION_FILE') && VERSION_FILE !== '') {
-	$commands[] = sprintf(
-		'git --git-dir="%s.git" --work-tree="%s" describe --always > %s'
-		, TMP_DIR
-		, TMP_DIR
-		, VERSION_FILE
-	);
-}
-
-// Backup the TARGET_DIR
-if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
-	$commands[] = sprintf(
-		'tar czf %s/%s-%s-%s.tar.gz %s*'
-		, BACKUP_DIR
-		, basename(TARGET_DIR)
-		, md5(TARGET_DIR)
-		, date('YmdHis')
-		, TARGET_DIR // We're backing up this directory into BACKUP_DIR
-	);
-}
-
-// Invoke composer
-if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
-	$commands[] = sprintf(
-		'composer --no-ansi --no-interaction --no-progress --working-dir=%s install %s'
-		, TMP_DIR
-		, (defined('COMPOSER_OPTIONS')) ? COMPOSER_OPTIONS : ''
-	);
-}
-
-// ==================================================[ Deployment ]===
-
-// Compile exclude parameters
-$exclude = '';
-foreach (unserialize(EXCLUDE) as $exc) {
-	$exclude .= ' --exclude='.$exc;
-}
-// Deployment command
-$commands[] = sprintf(
-	'rsync -rltgoDzv %s %s %s %s'
+// Get all the remote branches from git
+$remote_branches = execute_command(sprintf(
+    'git --git-dir="%s.git" --work-tree="%s" branch -r'
 	, TMP_DIR
-	, TARGET_DIR
-	, (DELETE_FILES) ? '--delete-after' : ''
-	, $exclude
-);
-
-// =======================================[ Post-Deployment steps ]===
-
-// Remove the TMP_DIR (depends on CLEAN_UP)
-if (CLEAN_UP) {
-	$commands['cleanup'] = sprintf(
-		'rm -rf %s'
-		, TMP_DIR
-	);
+	, TMP_DIR
+	),"",true);
+if($remote_branches === false) {
+    die(); // Error will have been displayed in execute_command
 }
 
-// =======================================[ Run the command steps ]===
+// Strip "origin/" and remove pointers (e.g. "origin/HEAD -> origin/master" to just "HEAD")
+foreach($remote_branches as &$rembranch) {
+       $rembranch = preg_replace('#^\S+?/(\S+)( -> .*)?$#', '$1', trim($rembranch));
+}
 
-foreach ($commands as $command) {
-	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
-	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
-		chdir(TMP_DIR); // Ensure that we're in the right directory
+foreach($remote_branches as $branch) {
+    // Check if branch parameter is set 
+    if(isset($_GET['branch']) && $branch !== $_GET['branch'] && !preg_match('~'.$branch.'~', $_GET['branch'])) {
+		// branch parameter doesn't match branch
+        continue;
 	}
-	$tmp = array();
-	exec($command.' 2>&1', $tmp, $return_code); // Execute the command
-	// Output the result
-	printf('
-<span class="prompt">$</span> <span class="command">%s</span>
-<div class="output">%s</div>
-'
-		, htmlentities(trim($command))
-		, htmlentities(trim(implode("\n", $tmp)))
-	);
-	flush(); // Try to output everything as it happens
-
-	// Error handling and cleanup
-	if ($return_code !== 0) {
-		printf('
-<div class="error">
-Error encountered!
-Stopping the script to prevent possible data loss.
-CHECK THE DATA IN YOUR TARGET DIR!
-</div>
-'
-		);
-		if (CLEAN_UP) {
-			$tmp = shell_exec($commands['cleanup']);
-			printf('
-
-
-Cleaning up temporary files ...
-
-<span class="prompt">$</span> <span class="command">%s</span>
-<div class="output">%s</div>
-'
-				, htmlentities(trim($commands['cleanup']))
-				, htmlentities(trim($tmp))
-			);
+    
+    // Try to find relevant configuration for this branch
+    $branch_config = null;
+    // Try exact match
+    if(isset($DEPLOYMENTS[$branch])){
+        $branch_config = $DEPLOYMENTS[$branch];
+    }else {
+        // Try regex match
+        foreach($DEPLOYMENTS as $branch_regex => $possible_config) {
+			// ~ is not valid in a git branch name and should be safe to use as a delimiter
+            if(preg_match('~'.$branch_regex.'~', $branch)) {
+                $branch_config = $possible_config;
+		// Regex replace the configuration options, so e.g. $1 can be the branch name in the option
+		foreach($branch_config as &$option) {
+			$option = preg_replace('~'.$branch_regex.'~', $option, $branch);
 		}
-		error_log(sprintf(
-			'Deployment error! %s'
-			, __FILE__
-		));
-		break;
+                break;
+            }
+        }
+    }
+    if($branch_config === null) {
+        printf("No deployment configuration found for branch <span class=\"output_variable\">%s</span>\n\n", $branch);
+        continue;
+    }
+	
+	// Set to defaults if not specified
+	if(!isset($branch_config['TARGET_DIR']))       $branch_config['TARGET_DIR']       = TARGET_DIR;
+	if(!isset($branch_config['DELETE_FILES']))     $branch_config['DELETE_FILES']     = DELETE_FILES;
+	if(!isset($branch_config['EXCLUDE']))          $branch_config['EXCLUDE']          = EXCLUDE;
+	if(!isset($branch_config['COMPOSER_OPTIONS'])) $branch_config['COMPOSER_OPTIONS'] = COMPOSER_OPTIONS;
+    
+    // Protect all the poor sods who did forget the target dir trailing slash
+    if(substr($branch_config['TARGET_DIR'], -1) !== "/") $branch_config['TARGET_DIR'] .= '/';
+	
+    printf("Deploying <span class=\"output_variable\">%s</span>\n", $branch);
+    printf("to        <span class=\"output_variable\">%s</span> ...\n\n", $branch_config['TARGET_DIR']);
+
+	// The commands
+	$commands = array();
+
+	// ========================================[ Pre-Deployment steps ]===
+
+	// Make sure the working tree is clean
+	$commands[] = sprintf(
+		'git --git-dir="%s.git" --work-tree="%s" reset --hard'
+		, TMP_DIR
+		, TMP_DIR
+	);
+	// Checkout the right branch. This syntax is valid with Git 1.6.6+
+	$commands[] = sprintf(
+		'git --git-dir="%s.git" --work-tree="%s" checkout origin/%s'
+        , TMP_DIR
+        , TMP_DIR
+		, $branch
+	);
+
+	// Update the submodules
+	$commands[] = sprintf(
+		'git submodule update --init --recursive'
+	);
+
+	// Describe the deployed version
+	if (defined('VERSION_FILE') && VERSION_FILE !== '') {
+		$commands[] = sprintf(
+			'git --git-dir="%s.git" --work-tree="%s" describe --always > %s'
+			, TMP_DIR
+			, TMP_DIR
+			, VERSION_FILE
+		);
+	}
+
+	// Backup the TARGET_DIR
+	if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
+		$commands[] = sprintf(
+			'tar czf %s/%s-%s-%s.tar.gz %s*'
+			, BACKUP_DIR
+			, basename(TARGET_DIR)
+			, md5(TARGET_DIR)
+			, date('YmdHis')
+			, TARGET_DIR // We're backing up this directory into BACKUP_DIR
+		);
+	}
+
+	// Invoke composer
+	if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
+		$commands[] = sprintf(
+			'composer --no-ansi --no-interaction --no-progress --working-dir=%s install %s'
+			, TMP_DIR
+			, (defined('COMPOSER_OPTIONS')) ? COMPOSER_OPTIONS : ''
+		);
+	}
+
+	// ==================================================[ Deployment ]===
+
+	// Compile exclude parameters
+	$exclude = '';
+	foreach (unserialize($branch_config['EXCLUDE']) as $exc) {
+		$exclude .= ' --exclude='.$exc;
+	}
+    
+    // Make sure target directory exists
+    if(!is_dir($branch_config['TARGET_DIR'])) {
+        $commands[] = sprintf(
+            'mkdir -p %s'
+            ,$branch_config['TARGET_DIR']
+        );
+    }
+    
+	// Deployment command
+	$commands[] = sprintf(
+		'rsync -rltgoDzv %s %s %s %s'
+		, TMP_DIR
+		, $branch_config['TARGET_DIR']
+		, ($branch_config['DELETE_FILES']) ? '--delete-after' : ''
+		, $exclude
+	);
+
+	// =======================================[ Post-Deployment steps ]===
+
+	// Remove the TMP_DIR (depends on CLEAN_UP)
+	if (CLEAN_UP) {
+		$cleanup_command = sprintf(
+			'rm -rf %s'
+			, TMP_DIR
+		);
+        $commands[] = $cleanup_command;
+	} else {
+        $cleanup_command = "";
+    }
+
+	// =======================================[ Run the command steps ]===
+
+	foreach ($commands as $command) {
+		if(!execute_command($command, $cleanup_command)) {
+			break; // Error will be displayed in execute_command
+		}
 	}
 }
 ?>
