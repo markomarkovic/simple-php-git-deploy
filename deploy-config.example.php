@@ -131,3 +131,20 @@ define('USE_COMPOSER', false);
  * @link http://getcomposer.org/doc/03-cli.md#install
  */
 define('COMPOSER_OPTIONS', '--no-dev');
+
+/**
+ * OPTIONAL
+ * The define email adress were you be notified on deploy faild.
+ *
+ * @var string Email
+ */
+define('EMAIL_ON_ERROR', false);
+
+/**
+ * OPTIONAL
+ *  Include file after deploy to do custom action like clear cache ...
+ *
+ * @var string Path to file
+ */
+define('INCLUDE_FILE', false);
+
