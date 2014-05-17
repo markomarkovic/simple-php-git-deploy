@@ -139,6 +139,22 @@ if (!defined('USE_COMPOSER')) define('USE_COMPOSER', false);
  */
 if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
 
+/**
+ * OPTIONAL
+ * The define email adress were you be notified on deploy faild.
+ *
+ * @var string Email
+ */
+if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
+
+/**
+ * OPTIONAL
+ *  Include file after deploy to do custom action like clear cache ...
+ *
+ * @var string Path to file
+ */
+if (!defined('INCLUDE_FILE')) define('INCLUDE_FILE', false);
+
 // ===========================================[ Configuration end ]===
 
 // If there's authorization error, set the correct HTTP header.
@@ -196,6 +212,18 @@ foreach ($requiredBinaries as $command) {
 		);
 	}
 }
+
+// Check if beckup dir is aviable
+if(defined('BACKUP_DIR') && BACKUP_DIR !== false && !is_dir(BACKUP_DIR)) {
+	printf('
+	<div class="error">
+	Error encountered!
+	BACKUP DIR is not reachable '.BACKUP_DIR.'
+	</div>
+	');
+	exit;
+}
+
 ?>
 
 Environment OK.
@@ -248,15 +276,16 @@ if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 	);
 }
 
-// Backup the TARGET_DIR
+// Backup the TARGET_DIR exclude BACKUP DIR
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
 	$commands[] = sprintf(
-		'tar czf %s/%s-%s-%s.tar.gz %s*'
+		'tar czf %s/%s-%s-%s.tar.gz %s* --exclude=\'%s\''
 		, BACKUP_DIR
 		, basename(TARGET_DIR)
 		, md5(TARGET_DIR)
 		, date('YmdHis')
 		, TARGET_DIR // We're backing up this directory into BACKUP_DIR
+		, BACKUP_DIR
 	);
 }
 
@@ -342,9 +371,25 @@ Cleaning up temporary files ...
 			'Deployment error! %s'
 			, __FILE__
 		));
+		if (EMAIL_ON_ERROR)
+		{
+			$subject = 'Error git deploy - '.$_SERVER["HTTP_HOST"];
+			$email = htmlentities(trim(implode("\n", $tmp)));
+			$headers   = array();
+			$headers[] = "MIME-Version: 1.0";
+			$headers[] = "Content-type: text/plain; charset=utf-8";
+			$headers[] = "From: Migration Script <migration@".$_SERVER["HTTP_HOST"].">";
+			$headers[] = "Subject: {$subject}";
+			$headers[] = "X-Mailer: PHP/".phpversion();
+
+			mail(EMAIL_ON_ERROR, $subject, $email, implode("\r\n", $headers));
+		}
+
 		break;
 	}
 }
+// Include file after deploy to do custom action like clear cache ...
+if(INCLUDE_FILE) include(INCLUDE_FILE);
 ?>
 
 Done.
