@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<Root>
+	<!-- <access_token></access_token> -->
+
+	<!-- <remote_repository></remote_repository> -->
+
+	<!-- <branch></branch> -->
+
+	<!-- <target_dir></target_dir> -->
+
+	<!-- <delete_files typecast="bool"></delete_files> -->
+
+	<!-- <exclude typecast="array">
+		<item_0>.git</item_0>
+		<item_1>assets</item_1>
+		<item_2></item_2>
+		<item_3></item_3>
+	</exclude> -->
+
+	<!-- <clean_up typecast="bool"></clean_up> -->
+
+	<!-- <time_limit typecast="int"></time_limit> -->
+
+	<!-- <use_composer typecast="bool"></use_composer> -->
+
+	<!-- <composer_options></composer_options> -->
+</Root>
