@@ -17,9 +17,8 @@ _Automatically deploy the code using PHP and Git._
 ## Usage
 
  * Configure the script and put it somewhere that's accessible from the
-   Internet. The prefered way to configure it is to use `deploy-config.php` file.
-   Rename `deploy-config.example.php` to `deploy-config.php` and edit the
-   configuration options there. That way, you won't have to edit the configuration
+   Internet. The prefered way to configure it is to use `settings.xml` file.
+   Edit the configuration options there. That way, you won't have to edit the configuration
    again if you download the new version of `deploy.php`.
  * Configure your git repository to call this script when the code is updated.
    The instructions for GitHub and Bitbucket are below.
