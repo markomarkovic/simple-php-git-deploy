@@ -225,7 +225,7 @@ if ($settings->access_token === 'BetterChangeMeNowOrSufferTheConsequences') {
 }
 
 // if there is post data from git
-if($HTTP_RAW_POST_DATA) {
+if(isset($HTTP_RAW_POST_DATA)) {
 	$json_post_data = json_decode($HTTP_RAW_POST_DATA);
 } else {
 	$json_post_data = false;
