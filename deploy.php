@@ -251,7 +251,7 @@ if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 // Backup the TARGET_DIR
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
 	$commands[] = sprintf(
-		'tar czf %s/%s-%s-%s.tar.gz %s*'
+		'tar --ignore-failed-read -czf %s/%s-%s-%s.tar.gz %s*'
 		, BACKUP_DIR
 		, basename(TARGET_DIR)
 		, md5(TARGET_DIR)
