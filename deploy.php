@@ -139,6 +139,14 @@ if (!defined('USE_COMPOSER')) define('USE_COMPOSER', false);
  */
 if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
 
+/**
+ * OPTIONAL
+ * Email address to be notified on deployment failure.
+ *
+ * @var string Email address
+ */
+if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
+
 // ===========================================[ Configuration end ]===
 
 // If there's authorization error, set the correct HTTP header.
@@ -345,10 +353,19 @@ Cleaning up temporary files ...
 				, htmlentities(trim($tmp))
 			);
 		}
-		error_log(sprintf(
-			'Deployment error! %s'
+		$error = sprintf(
+			'Deployment error on %s using %s!'
+			, $_SERVER['HTTP_HOST']
 			, __FILE__
-		));
+		);
+		error_log($error);
+		if (EMAIL_ON_ERROR) {
+			$output .= ob_get_contents();
+			$headers = array();
+			$headers[] = sprintf('From: Simple PHP Git deploy script <simple-php-git-deploy@%s>', $_SERVER['HTTP_HOST']);
+			$headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
+			mail(EMAIL_ON_ERROR, $error, strip_tags(trim($output)), implode("\r\n", $headers));
+		}
 		break;
 	}
 }

@@ -131,3 +131,11 @@ define('USE_COMPOSER', false);
  * @link http://getcomposer.org/doc/03-cli.md#install
  */
 define('COMPOSER_OPTIONS', '--no-dev');
+
+/**
+ * OPTIONAL
+ * Email address to be notified on deployment failure.
+ *
+ * @var string Email address
+ */
+define('EMAIL_ON_ERROR', false);
