@@ -145,6 +145,7 @@ if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 	header('HTTP/1.0 403 Forbidden');
 }
+ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -301,7 +302,7 @@ if (CLEAN_UP) {
 }
 
 // =======================================[ Run the command steps ]===
-
+$output = '';
 foreach ($commands as $command) {
 	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
 	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
@@ -317,7 +318,8 @@ foreach ($commands as $command) {
 		, htmlentities(trim($command))
 		, htmlentities(trim(implode("\n", $tmp)))
 	);
-	flush(); // Try to output everything as it happens
+	$output .= ob_get_contents();
+	ob_flush(); // Try to output everything as it happens
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
