@@ -9,7 +9,7 @@
  * That way, you won't have to edit the configuration again if you download the
  * new version of `deploy.php`.
  *
- * @version 1.2.2
+ * @version 1.3.0
  */
 
 /**
@@ -69,8 +69,6 @@ define('DELETE_FILES', false);
  */
 define('EXCLUDE', serialize(array(
 	'.git',
-	'webroot/uploads',
-	'app/config/database.php',
 )));
 
 /**
@@ -95,7 +93,7 @@ define('CLEAN_UP', true);
  *
  * @var string Full path to the file name
  */
-define('VERSION_FILE', TMP_DIR.'VERSION.txt');
+define('VERSION_FILE', TMP_DIR.'VERSION');
 
 /**
  * Time limit for each command.
@@ -131,3 +129,11 @@ define('USE_COMPOSER', false);
  * @link http://getcomposer.org/doc/03-cli.md#install
  */
 define('COMPOSER_OPTIONS', '--no-dev');
+
+/**
+ * OPTIONAL
+ * Email address to be notified on deployment failure.
+ *
+ * @var string Email address
+ */
+define('EMAIL_ON_ERROR', false);

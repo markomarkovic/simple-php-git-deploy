@@ -4,7 +4,7 @@
  *
  * Automatically deploy the code using PHP and Git.
  *
- * @version 1.2.2
+ * @version 1.3.0
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
  */
 
@@ -76,8 +76,6 @@ if (!defined('DELETE_FILES')) define('DELETE_FILES', false);
  */
 if (!defined('EXCLUDE')) define('EXCLUDE', serialize(array(
 	'.git',
-	'webroot/uploads',
-	'app/config/database.php',
 )));
 
 /**
@@ -102,7 +100,7 @@ if (!defined('CLEAN_UP')) define('CLEAN_UP', true);
  *
  * @var string Full path to the file name
  */
-if (!defined('VERSION_FILE')) define('VERSION_FILE', TMP_DIR.'VERSION.txt');
+if (!defined('VERSION_FILE')) define('VERSION_FILE', TMP_DIR.'VERSION');
 
 /**
  * Time limit for each command.
@@ -139,12 +137,21 @@ if (!defined('USE_COMPOSER')) define('USE_COMPOSER', false);
  */
 if (!defined('COMPOSER_OPTIONS')) define('COMPOSER_OPTIONS', '--no-dev');
 
+/**
+ * OPTIONAL
+ * Email address to be notified on deployment failure.
+ *
+ * @var string Email address
+ */
+if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
+
 // ===========================================[ Configuration end ]===
 
 // If there's authorization error, set the correct HTTP header.
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 	header('HTTP/1.0 403 Forbidden');
 }
+ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -180,6 +187,9 @@ Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
 $requiredBinaries = array('git', 'rsync');
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$requiredBinaries[] = 'tar';
+	if (!is_dir(BACKUP_DIR) || !is_writable(BACKUP_DIR)) {
+		die(sprintf('<div class="error">BACKUP_DIR `%s` does not exists or is not writeable.</div>', BACKUP_DIR));
+	}
 }
 if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	$requiredBinaries[] = 'composer --no-ansi';
@@ -249,9 +259,11 @@ if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 }
 
 // Backup the TARGET_DIR
-if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
+// without the BACKUP_DIR for the case when it's inside the TARGET_DIR
+if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$commands[] = sprintf(
-		'tar czf %s/%s-%s-%s.tar.gz %s*'
+		"tar --exclude='%s*' -czf %s/%s-%s-%s.tar.gz %s*"
+		, BACKUP_DIR
 		, BACKUP_DIR
 		, basename(TARGET_DIR)
 		, md5(TARGET_DIR)
@@ -278,7 +290,7 @@ foreach (unserialize(EXCLUDE) as $exc) {
 }
 // Deployment command
 $commands[] = sprintf(
-	'rsync -rltgoDzv %s %s %s %s'
+	'rsync -rltgoDzvO %s %s %s %s'
 	, TMP_DIR
 	, TARGET_DIR
 	, (DELETE_FILES) ? '--delete-after' : ''
@@ -296,7 +308,7 @@ if (CLEAN_UP) {
 }
 
 // =======================================[ Run the command steps ]===
-
+$output = '';
 foreach ($commands as $command) {
 	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
 	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
@@ -312,7 +324,8 @@ foreach ($commands as $command) {
 		, htmlentities(trim($command))
 		, htmlentities(trim(implode("\n", $tmp)))
 	);
-	flush(); // Try to output everything as it happens
+	$output .= ob_get_contents();
+	ob_flush(); // Try to output everything as it happens
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
@@ -338,10 +351,19 @@ Cleaning up temporary files ...
 				, htmlentities(trim($tmp))
 			);
 		}
-		error_log(sprintf(
-			'Deployment error! %s'
+		$error = sprintf(
+			'Deployment error on %s using %s!'
+			, $_SERVER['HTTP_HOST']
 			, __FILE__
-		));
+		);
+		error_log($error);
+		if (EMAIL_ON_ERROR) {
+			$output .= ob_get_contents();
+			$headers = array();
+			$headers[] = sprintf('From: Simple PHP Git deploy script <simple-php-git-deploy@%s>', $_SERVER['HTTP_HOST']);
+			$headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
+			mail(EMAIL_ON_ERROR, $error, strip_tags(trim($output)), implode("\r\n", $headers));
+		}
 		break;
 	}
 }
