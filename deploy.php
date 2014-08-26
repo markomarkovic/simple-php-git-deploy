@@ -76,8 +76,6 @@ if (!defined('DELETE_FILES')) define('DELETE_FILES', false);
  */
 if (!defined('EXCLUDE')) define('EXCLUDE', serialize(array(
 	'.git',
-	'webroot/uploads',
-	'app/config/database.php',
 )));
 
 /**
@@ -102,7 +100,7 @@ if (!defined('CLEAN_UP')) define('CLEAN_UP', true);
  *
  * @var string Full path to the file name
  */
-if (!defined('VERSION_FILE')) define('VERSION_FILE', TMP_DIR.'VERSION.txt');
+if (!defined('VERSION_FILE')) define('VERSION_FILE', TMP_DIR.'VERSION');
 
 /**
  * Time limit for each command.
