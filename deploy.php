@@ -180,6 +180,9 @@ Running as <b><?php echo trim(shell_exec('whoami')); ?></b>.
 $requiredBinaries = array('git', 'rsync');
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$requiredBinaries[] = 'tar';
+	if (!is_dir(BACKUP_DIR) || !is_writable(BACKUP_DIR)) {
+		die(sprintf('<div class="error">BACKUP_DIR `%s` does not exists or is not writeable.</div>', BACKUP_DIR));
+	}
 }
 if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	$requiredBinaries[] = 'composer --no-ansi';
