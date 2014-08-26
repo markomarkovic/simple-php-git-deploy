@@ -252,9 +252,11 @@ if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 }
 
 // Backup the TARGET_DIR
-if (defined('BACKUP_DIR') && BACKUP_DIR !== false && is_dir(BACKUP_DIR)) {
+// without the BACKUP_DIR for the case when it's inside the TARGET_DIR
+if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$commands[] = sprintf(
-		'tar czf %s/%s-%s-%s.tar.gz %s*'
+		"tar --exclude='%s*' -czf %s/%s-%s-%s.tar.gz %s*"
+		, BACKUP_DIR
 		, BACKUP_DIR
 		, basename(TARGET_DIR)
 		, md5(TARGET_DIR)
