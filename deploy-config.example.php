@@ -144,6 +144,6 @@ define('EMAIL_ON_ERROR', false);
  * 
  * @var array
  */
-define('EXCLUSIVE_DIRS',array(
+define('EXCLUSIVE_DIRS',serialize(array(
     '',
-));
+)));

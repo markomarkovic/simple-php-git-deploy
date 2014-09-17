@@ -152,11 +152,11 @@ if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
  * @var array
  */
 if (!defined('EXCLUSIVE_DIRS')) {
-    define('EXCLUSIVE_DIRS',array(
+    define('EXCLUSIVE_DIRS',serialize(array(
         'includes/',
         'source/',
         'config/'
-));
+)));
 }
 
 // ===========================================[ Configuration end ]===
@@ -303,7 +303,7 @@ foreach (unserialize(EXCLUDE) as $exc) {
 	$exclude .= ' --exclude='.$exc;
 }
 // Deployment command
-foreach(EXCLUSIVE_DIRS as $exclusive){
+foreach(unserialize(EXCLUSIVE_DIRS) as $exclusive){
 $commands[] = sprintf(
 	'rsync -rltgoDzv %s %s %s %s'
 	, TMP_DIR.$exclusive
