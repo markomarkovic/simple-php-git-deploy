@@ -137,3 +137,13 @@ define('COMPOSER_OPTIONS', '--no-dev');
  * @var string Email address
  */
 define('EMAIL_ON_ERROR', false);
+
+/*
+ * OPTIONAL
+ * exclusive directories (include trailing slash)
+ * 
+ * @var array
+ */
+define('EXCLUSIVE_DIRS',array(
+    '',
+));
