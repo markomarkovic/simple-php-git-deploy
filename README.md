@@ -79,4 +79,4 @@ For more info, read the source of `deploy.php`.
 
 ---
 
-_Inspired by [a Gist by oodavid](https://gist.github.com/1809044)_
+If you find this script useful, consider donating BTC to `1fLnPZkMYw1TFNEsJZCciwDAmUhDw2wit`.
