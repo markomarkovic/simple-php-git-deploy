@@ -9,7 +9,7 @@
  * That way, you won't have to edit the configuration again if you download the
  * new version of `deploy.php`.
  *
- * @version 1.3.0
+ * @version 1.3.1
  */
 
 /**
@@ -106,7 +106,7 @@ define('TIME_LIMIT', 30);
  * OPTIONAL
  * Backup the TARGET_DIR into BACKUP_DIR before deployment.
  *
- * @var string Full backup directory path e.g. '/tmp/'
+ * @var string Full backup directory path e.g. `/tmp/`
  */
 define('BACKUP_DIR', false);
 
@@ -129,6 +129,16 @@ define('USE_COMPOSER', false);
  * @link http://getcomposer.org/doc/03-cli.md#install
  */
 define('COMPOSER_OPTIONS', '--no-dev');
+
+/**
+ * OPTIONAL
+ * The COMPOSER_HOME environment variable is needed only if the script is
+ * executed by a system user that has no HOME defined, e.g. `www-data`.
+ *
+ * @var string Path to the COMPOSER_HOME e.g. `/tmp/composer`
+ * @link https://getcomposer.org/doc/03-cli.md#composer-home
+ */
+define('COMPOSER_HOME', false);
 
 /**
  * OPTIONAL
