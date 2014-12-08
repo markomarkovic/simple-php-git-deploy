@@ -132,6 +132,16 @@ define('COMPOSER_OPTIONS', '--no-dev');
 
 /**
  * OPTIONAL
+ * The COMPOSER_HOME environment variable is needed only if the script is
+ * executed by a system user that has no HOME defined, e.g. `www-data`.
+ *
+ * @var string Path to the COMPOSER_HOME e.g. `/tmp/composer`
+ * @link https://getcomposer.org/doc/03-cli.md#composer-home
+ */
+define('COMPOSER_HOME', false);
+
+/**
+ * OPTIONAL
  * Email address to be notified on deployment failure.
  *
  * @var string Email address
