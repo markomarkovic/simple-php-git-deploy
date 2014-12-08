@@ -9,7 +9,7 @@
  * That way, you won't have to edit the configuration again if you download the
  * new version of `deploy.php`.
  *
- * @version 1.3.0
+ * @version 1.3.1
  */
 
 /**
