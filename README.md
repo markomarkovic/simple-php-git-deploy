@@ -11,13 +11,13 @@ _Automatically deploy the code using PHP and Git._
 * The system user running PHP (e.g. `www-data`) needs to have the necessary
   access permissions for the `TMP_DIR` and `TARGET_DIR` locations on
   the _server machine_.
-* If the Git repo you wish to deploy is private, the system user running PHP
+* If the Git repository you wish to deploy is private, the system user running PHP
   also needs to have the right SSH keys to access the remote repository.
 
 ## Usage
 
  * Configure the script and put it somewhere that's accessible from the
-   Internet. The prefered way to configure it is to use `deploy-config.php` file.
+   Internet. The preferred way to configure it is to use `deploy-config.php` file.
    Rename `deploy-config.example.php` to `deploy-config.php` and edit the
    configuration options there. That way, you won't have to edit the configuration
    again if you download the new version of `deploy.php`.

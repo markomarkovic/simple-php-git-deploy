@@ -106,7 +106,7 @@ define('TIME_LIMIT', 30);
  * OPTIONAL
  * Backup the TARGET_DIR into BACKUP_DIR before deployment.
  *
- * @var string Full backup directory path e.g. '/tmp/'
+ * @var string Full backup directory path e.g. `/tmp/`
  */
 define('BACKUP_DIR', false);
 
