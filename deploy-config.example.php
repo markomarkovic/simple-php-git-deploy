@@ -142,6 +142,17 @@ define('COMPOSER_HOME', false);
 
 /**
  * OPTIONAL
+ * List of commands to executed after the repository is cloned or changes are
+ * fetched.
+ *
+ * @var serialized array of strings
+ */
+define('POST_COMMANDS', serialize(array(
+	// 'echo "${REMOTE_REPOSITORY}" was deployed.'
+)));
+
+/**
+ * OPTIONAL
  * Email address to be notified on deployment failure.
  *
  * @var string Email address

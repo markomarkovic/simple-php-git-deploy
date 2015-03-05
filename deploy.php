@@ -294,6 +294,16 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	}
 }
 
+// Invoke post commands
+if (defined('POST_COMMANDS')) {
+    $post_commands = unserialize(POST_COMMANDS);
+    $vars = get_defined_constants();
+    // Allow to use the constants like $TARGET_DIR, $BACKUP_DIR, $BRANCH
+    foreach ($post_commands as $command) {
+        $commands[] = preg_replace('/([$](\w{1,20})|[$]\{([^\}]+)\})/e', '$vars["$2$3"]', $command);
+    }
+}
+
 // ==================================================[ Deployment ]===
 
 // Compile exclude parameters
@@ -339,6 +349,7 @@ foreach ($commands as $command) {
 	);
 	$output .= ob_get_contents();
 	ob_flush(); // Try to output everything as it happens
+	flush();
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
