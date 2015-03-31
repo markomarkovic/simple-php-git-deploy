@@ -10,6 +10,9 @@
  * new version of `deploy.php`.
  *
  * @version 1.3.1
+ * 
+ * Customed By Dye Jarhoo
+ * 2015.3.31
  */
 
 /**
@@ -19,7 +22,7 @@
  *
  * @var string
  */
-define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
+define('SECRET_ACCESS_TOKEN', '');
 
 /**
  * The address of the remote Git repository that contains the code that's being
@@ -28,7 +31,7 @@ define('SECRET_ACCESS_TOKEN', 'BetterChangeMeNowOrSufferTheConsequences');
  *
  * @var string
  */
-define('REMOTE_REPOSITORY', 'https://github.com/markomarkovic/simple-php-git-deploy.git');
+define('REMOTE_REPOSITORY', 'git://github.com/opts/opts.git');
 
 /**
  * The branch that's being deployed.
@@ -44,7 +47,7 @@ define('BRANCH', 'master');
  *
  * @var string Full path including the trailing slash
  */
-define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
+define('TARGET_DIR', '/srv/www/');
 
 /**
  * Whether to delete the files that are not in the repository but are on the
@@ -57,7 +60,7 @@ define('TARGET_DIR', '/tmp/simple-php-git-deploy/');
  *
  * @var boolean
  */
-define('DELETE_FILES', false);
+define('DELETE_FILES', true);
 
 /**
  * The directories and files that are to be excluded when updating the code.
@@ -69,6 +72,8 @@ define('DELETE_FILES', false);
  */
 define('EXCLUDE', serialize(array(
 	'.git',
+	'cache',
+	'README',
 )));
 
 /**
@@ -79,14 +84,14 @@ define('EXCLUDE', serialize(array(
  *
  * @var string Full path including the trailing slash
  */
-define('TMP_DIR', '/tmp/spgd-'.md5(REMOTE_REPOSITORY).'/');
+define('TMP_DIR', '/var/tmp/hubfetch-OPTS/');
 
 /**
  * Whether to remove the TMP_DIR after the deployment.
  * It's useful NOT to clean up in order to only fetch changes on the next
  * deployment.
  */
-define('CLEAN_UP', true);
+define('CLEAN_UP', false);
 
 /**
  * Output the version of the deployed code.
@@ -100,7 +105,7 @@ define('VERSION_FILE', TMP_DIR.'VERSION');
  *
  * @var int Time in seconds
  */
-define('TIME_LIMIT', 30);
+define('TIME_LIMIT', 90);
 
 /**
  * OPTIONAL
@@ -108,7 +113,7 @@ define('TIME_LIMIT', 30);
  *
  * @var string Full backup directory path e.g. `/tmp/`
  */
-define('BACKUP_DIR', false);
+define('BACKUP_DIR', '/srv/backups/rollback/');
 
 /**
  * OPTIONAL
