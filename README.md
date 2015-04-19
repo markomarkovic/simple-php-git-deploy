@@ -79,4 +79,4 @@ For more info, read the source of `deploy.php`.
 
 ---
 
-If you find this script useful, consider donating BTC (the original author) to `1fLnPZkMYw1TFNEsJZCciwDAmUhDw2wit`.
+If you find this script useful, consider donating BTC to `1fLnPZkMYw1TFNEsJZCciwDAmUhDw2wit`.
