@@ -6,6 +6,16 @@
  *
  * @version 1.3.1
  * @link    https://github.com/markomarkovic/simple-php-git-deploy/
+ * modified by: Dye Jarhoo
+ * 2015.3.31
+ * @modi-version 1.2.0
+ * @link    https://github.com/opts/hubfetch
+ * 
+ * TODO:
+ * backup will fail on TARGET_DIR empty
+ * restore won't fullfill when TARGET_DIR/cache not exist
+ */
+
  */
 
 // =========================================[ Configuration start ]===
@@ -161,6 +171,7 @@ if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
 // If there's authorization error, set the correct HTTP header.
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 	header('HTTP/1.0 403 Forbidden');
+	exit();
 }
 ob_start();
 ?>
@@ -206,13 +217,13 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	$requiredBinaries[] = 'composer --no-ansi';
 }
 foreach ($requiredBinaries as $command) {
-	$path = trim(shell_exec('which '.$command));
+	$path = trim(shell_exec('whereis '.$command));
 	if ($path == '') {
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
 	} else {
 		$version = explode("\n", shell_exec($command.' --version'));
 		printf('<b>%s</b> : %s'."\n"
-			, $path
+			, $command
 			, $version[0]
 		);
 	}
@@ -273,7 +284,7 @@ if (defined('VERSION_FILE') && VERSION_FILE !== '') {
 // without the BACKUP_DIR for the case when it's inside the TARGET_DIR
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$commands[] = sprintf(
-		"tar --exclude='%s*' -czf %s/%s-%s-%s.tar.gz %s*"
+		"tar --exclude='%s*' -czf %s%s-%s-%s.tar.gz %s*"
 		, BACKUP_DIR
 		, BACKUP_DIR
 		, basename(TARGET_DIR)
@@ -304,10 +315,10 @@ foreach (unserialize(EXCLUDE) as $exc) {
 }
 // Deployment command
 $commands[] = sprintf(
-	'rsync -rltgoDzvO %s %s %s %s'
+	'rsync -rltgozvO %s %s %s %s'
 	, TMP_DIR
 	, TARGET_DIR
-	, (DELETE_FILES) ? '--delete-after' : ''
+	, (DELETE_FILES) ? '--delete-delay' : ''
 	, $exclude
 );
 
@@ -324,7 +335,7 @@ if (CLEAN_UP) {
 // =======================================[ Run the command steps ]===
 $output = '';
 foreach ($commands as $command) {
-	set_time_limit(TIME_LIMIT); // Reset the time limit for each command
+	set_time_limit(TIME_LIMIT); // Reset the time limit for each command, needs php safe mode off
 	if (file_exists(TMP_DIR) && is_dir(TMP_DIR)) {
 		chdir(TMP_DIR); // Ensure that we're in the right directory
 	}
@@ -340,6 +351,7 @@ foreach ($commands as $command) {
 	);
 	$output .= ob_get_contents();
 	ob_flush(); // Try to output everything as it happens
+	# Not fuctional, exec() won't output result before it dies
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
