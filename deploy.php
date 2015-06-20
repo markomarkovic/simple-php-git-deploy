@@ -375,7 +375,16 @@ Cleaning up temporary files ...
 			$headers = array();
 			$headers[] = sprintf('From: Simple PHP Git deploy script <simple-php-git-deploy@%s>', $_SERVER['HTTP_HOST']);
 			$headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
-			mail(EMAIL_ON_ERROR, $error, strip_tags(trim($output)), implode("\r\n", $headers));
+
+			if (is_string(EMAIL_ON_ERROR)) {
+				$emails = array(EMAIL_ON_ERROR);
+			} elseif (is_array()) {
+				$emails = EMAIL_ON_ERROR;
+			}
+
+			foreach ($emails as $email) {
+				mail($email, $error, strip_tags(trim($output)), implode("\r\n", $headers));
+			}
 		}
 		break;
 	}

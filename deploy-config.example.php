@@ -142,8 +142,8 @@ define('COMPOSER_HOME', false);
 
 /**
  * OPTIONAL
- * Email address to be notified on deployment failure.
+ * Email addresses to be notified on deployment failure.
  *
- * @var string Email address
+ * @var string Email address or array of email addresses
  */
 define('EMAIL_ON_ERROR', false);
