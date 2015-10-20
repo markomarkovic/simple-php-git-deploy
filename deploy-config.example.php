@@ -2,7 +2,7 @@
 /**
  * Deployment configuration
  *
- * It's preferable to configure the script using this file istead of directly.
+ * It's preferable to configure the script using this file instead of directly.
  *
  * Rename this file to `deploy-config.php` and edit the
  * configuration options here instead of directly in `deploy.php`.
