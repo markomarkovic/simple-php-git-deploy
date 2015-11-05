@@ -39,7 +39,7 @@ _Automatically deploy the code using PHP and Git._
 ### Bitbucket
 
  1. _(This step is only needed for private repositories)_ Go to
-    `https://bitbucket.org/USERNAME/REPOSITORY/admin/deploy-keys` and add your
+    `https://bitbucket.org/USERNAME/REPOSITORY/admin/deploy-keys/` (trailing slash required) and add your
     server SSH key.
  1. Go to `https://bitbucket.org/USERNAME/REPOSITORY/admin/services`.
  1. Add **POST** service.
