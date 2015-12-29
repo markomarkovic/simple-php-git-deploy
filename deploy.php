@@ -160,7 +160,7 @@ if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
 
 // If there's authorization error, set the correct HTTP header.
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
-	header('HTTP/1.0 403 Forbidden');
+	header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 }
 ob_start();
 ?>
@@ -181,9 +181,11 @@ h2, .error { color: #c33; }
 <body>
 <?php
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN) {
+	header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 	die('<h2>ACCESS DENIED!</h2>');
 }
 if (SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
+	header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 	die("<h2>You're suffering the consequences!<br>Change the SECRET_ACCESS_TOKEN from it's default value!</h2>");
 }
 ?>
@@ -199,6 +201,7 @@ $requiredBinaries = array('git', 'rsync');
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$requiredBinaries[] = 'tar';
 	if (!is_dir(BACKUP_DIR) || !is_writable(BACKUP_DIR)) {
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		die(sprintf('<div class="error">BACKUP_DIR `%s` does not exists or is not writeable.</div>', BACKUP_DIR));
 	}
 }
@@ -208,6 +211,7 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 foreach ($requiredBinaries as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
 	} else {
 		$version = explode("\n", shell_exec($command.' --version'));
@@ -343,6 +347,7 @@ foreach ($commands as $command) {
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		printf('
 <div class="error">
 Error encountered!
