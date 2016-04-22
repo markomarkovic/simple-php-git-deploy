@@ -17,7 +17,12 @@
  * configuration options there instead of here. That way, you won't have to edit
  * the configuration again if you download the new version of `deploy.php`.
  */
-if (file_exists(basename(__FILE__, '.php').'-config.php')) require_once basename(__FILE__, '.php').'-config.php';
+if (file_exists(basename(__FILE__, '.php').'-config.php')) {
+	define('CONFIG_FILE', basename(__FILE__, '.php').'-config.php');
+	require_once CONFIG_FILE;
+} else {
+	define('CONFIG_FILE', __FILE__);
+}
 
 /**
  * Protect the script from unauthorized access by using a secret access token.
@@ -151,7 +156,8 @@ if (!defined('COMPOSER_HOME')) define('COMPOSER_HOME', false);
  * OPTIONAL
  * Email address to be notified on deployment failure.
  *
- * @var string Email address
+ * @var string A single email address, or comma separated list of email addresses
+ *      e.g. 'someone@example.com' or 'someone@example.com, someone-else@example.com, ...'
  */
 if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
 
@@ -159,7 +165,7 @@ if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
 
 // If there's authorization error, set the correct HTTP header.
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
-	header('HTTP/1.0 403 Forbidden');
+	header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 }
 ob_start();
 ?>
@@ -180,9 +186,11 @@ h2, .error { color: #c33; }
 <body>
 <?php
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN) {
+	header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 	die('<h2>ACCESS DENIED!</h2>');
 }
 if (SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
+	header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 	die("<h2>You're suffering the consequences!<br>Change the SECRET_ACCESS_TOKEN from it's default value!</h2>");
 }
 ?>
@@ -198,6 +206,7 @@ $requiredBinaries = array('git', 'rsync');
 if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 	$requiredBinaries[] = 'tar';
 	if (!is_dir(BACKUP_DIR) || !is_writable(BACKUP_DIR)) {
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		die(sprintf('<div class="error">BACKUP_DIR `%s` does not exists or is not writeable.</div>', BACKUP_DIR));
 	}
 }
@@ -207,6 +216,7 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 foreach ($requiredBinaries as $command) {
 	$path = trim(shell_exec('which '.$command));
 	if ($path == '') {
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
 	} else {
 		$version = explode("\n", shell_exec($command.' --version'));
@@ -219,6 +229,8 @@ foreach ($requiredBinaries as $command) {
 ?>
 
 Environment OK.
+
+Using configuration defined in <?php echo CONFIG_FILE."\n"; ?>
 
 Deploying <?php echo REMOTE_REPOSITORY; ?> <?php echo BRANCH."\n"; ?>
 to        <?php echo TARGET_DIR; ?> ...
@@ -241,7 +253,7 @@ if (!is_dir(TMP_DIR)) {
 	// TMP_DIR exists and hopefully already contains the correct remote origin
 	// so we'll fetch the changes and reset the contents.
 	$commands[] = sprintf(
-		'git --git-dir="%s.git" --work-tree="%s" fetch origin %s'
+		'git --git-dir="%s.git" --work-tree="%s" fetch --tags origin %s'
 		, TMP_DIR
 		, TMP_DIR
 		, BRANCH
@@ -342,6 +354,7 @@ foreach ($commands as $command) {
 
 	// Error handling and cleanup
 	if ($return_code !== 0) {
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		printf('
 <div class="error">
 Error encountered!

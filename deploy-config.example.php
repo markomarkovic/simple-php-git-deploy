@@ -144,6 +144,7 @@ define('COMPOSER_HOME', false);
  * OPTIONAL
  * Email address to be notified on deployment failure.
  *
- * @var string Email address
+ * @var string A single email address, or comma separated list of email addresses
+ *      e.g. 'someone@example.com' or 'someone@example.com, someone-else@example.com, ...'
  */
 define('EMAIL_ON_ERROR', false);
