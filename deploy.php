@@ -214,7 +214,7 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	$requiredBinaries[] = 'composer --no-ansi';
 }
 foreach ($requiredBinaries as $command) {
-	$path = trim(shell_exec('which '.$command));
+	$path = trim(shell_exec('export PATH=$PATH; which '.$command));
 	if ($path == '') {
 		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
