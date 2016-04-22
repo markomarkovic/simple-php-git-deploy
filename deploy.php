@@ -17,7 +17,12 @@
  * configuration options there instead of here. That way, you won't have to edit
  * the configuration again if you download the new version of `deploy.php`.
  */
-if (file_exists(basename(__FILE__, '.php').'-config.php')) require_once basename(__FILE__, '.php').'-config.php';
+if (file_exists(basename(__FILE__, '.php').'-config.php')) {
+	define('CONFIG_FILE', basename(__FILE__, '.php').'-config.php');
+	require_once CONFIG_FILE;
+} else {
+	define('CONFIG_FILE', __FILE__);
+}
 
 /**
  * Protect the script from unauthorized access by using a secret access token.
@@ -224,6 +229,8 @@ foreach ($requiredBinaries as $command) {
 ?>
 
 Environment OK.
+
+Using configuration defined in <?php echo CONFIG_FILE."\n"; ?>
 
 Deploying <?php echo REMOTE_REPOSITORY; ?> <?php echo BRANCH."\n"; ?>
 to        <?php echo TARGET_DIR; ?> ...
