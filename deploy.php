@@ -161,6 +161,20 @@ if (!defined('COMPOSER_HOME')) define('COMPOSER_HOME', false);
  */
 if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
 
+/*
+ * OPTIONAL
+ * exclusive directories (include trailing slash)
+ * 
+ * @var array
+ */
+if (!defined('EXCLUSIVE_DIRS')) {
+    define('EXCLUSIVE_DIRS',serialize(array(
+        'includes/',
+        'source/',
+        'config/'
+)));
+}
+
 // ===========================================[ Configuration end ]===
 
 // If there's authorization error, set the correct HTTP header.
@@ -314,13 +328,15 @@ foreach (unserialize(EXCLUDE) as $exc) {
 	$exclude .= ' --exclude='.$exc;
 }
 // Deployment command
+foreach(unserialize(EXCLUSIVE_DIRS) as $exclusive){
 $commands[] = sprintf(
-	'rsync -rltgoDzvO %s %s %s %s'
-	, TMP_DIR
-	, TARGET_DIR
+	'rsync -rltgoDzv %s %s %s %s'
+	, TMP_DIR.$exclusive
+	, TARGET_DIR.$exclusive
 	, (DELETE_FILES) ? '--delete-after' : ''
 	, $exclude
 );
+}
 
 // =======================================[ Post-Deployment steps ]===
 

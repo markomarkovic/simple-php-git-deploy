@@ -148,3 +148,13 @@ define('COMPOSER_HOME', false);
  *      e.g. 'someone@example.com' or 'someone@example.com, someone-else@example.com, ...'
  */
 define('EMAIL_ON_ERROR', false);
+
+/*
+ * OPTIONAL
+ * exclusive directories (include trailing slash)
+ * 
+ * @var array
+ */
+define('EXCLUSIVE_DIRS',serialize(array(
+    '',
+)));
