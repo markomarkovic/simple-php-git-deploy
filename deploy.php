@@ -217,6 +217,9 @@ if (defined('USE_YUI_COMPRESSOR') && USE_YUI_COMPRESSOR === true) {
 	$requiredBinaries[] = 'find';
 	$requiredBinaries[] = 'yui-compressor';
 }
+if (defined('USE_REPLACE_CONFIG_FILES') && USE_REPLACE_CONFIG_FILES === true) {
+    $requiredBinaries[] = '/bin/cp';
+}
 foreach ($requiredBinaries as $command) {
 	$path = trim(shell_exec('export PATH=$PATH; which '.$command));
 	if ($path == '') {
@@ -323,6 +326,21 @@ if (defined('USE_YUI_COMPRESSOR') && USE_YUI_COMPRESSOR === true) {
             'find %s -name \'*.js\' -exec sh -c \'for i; do yui-compressor "$i" --type js -o "$i"; echo $i; done\' sh {} +'
             , TMP_DIR
         );
+    }
+}
+
+// Copy and replace config files
+if (defined('USE_REPLACE_CONFIG_FILES') && USE_REPLACE_CONFIG_FILES === true) {
+    foreach (unserialize(REPLACE_CONFIG_FILES_MAP) as $from => $to) {
+        if (file_exists(__DIR__."/config/".$from)) {
+            $commands[] = sprintf(
+                '/bin/cp -f %s %s'
+                , __DIR__."/config/".$from
+                , TMP_DIR.$to
+            );
+        }else {
+            echo '<div class="error">file '.__DIR__."/config/".$from.' not found!</div>';
+        }
     }
 }
 
