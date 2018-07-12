@@ -177,3 +177,22 @@ define('MINIFY_CSS', false);
  * @link http://yui.github.io/yuicompressor/
  */
 define('MINIFY_JS', false);
+
+/**
+ * OPTIONAL
+ * Whether to copy defined config files to production
+ *
+ * @var serialized array of strings
+ */
+define('USE_REPLACE_CONFIG_FILES', false);
+
+/**
+ * OPTIONAL
+ * Specify the config files location to copy or replace config on production.
+ *
+ * @var serialized array of strings
+ */
+define('REPLACE_CONFIG_FILES_MAP', serialize(array(
+    // This would copy /config/.env file to TARGET_DIR/.env
+    '.env' => '.env',
+)));
