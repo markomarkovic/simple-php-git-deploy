@@ -148,3 +148,32 @@ define('COMPOSER_HOME', false);
  *      e.g. 'someone@example.com' or 'someone@example.com, someone-else@example.com, ...'
  */
 define('EMAIL_ON_ERROR', false);
+
+/**
+ * OPTIONAL
+ * Whether to minify CSS and JS files after the repository is cloned or changes are
+ * fetched. YUI Compressor needs to be available on the server machine, installed
+ * globaly (as `yui-compressor`).
+ *
+ * @var boolean Whether to use yui-compressor or not
+ * @link http://yui.github.io/yuicompressor/
+ */
+define('USE_YUI_COMPRESSOR', false);
+
+/**
+ * OPTIONAL
+ * Whether to minify CSS files if USE_YUI_COMPRESSOR option is true
+ *
+ * @var boolean Whether to use yui-compressor for css minimisation or not
+ * @link http://yui.github.io/yuicompressor/
+ */
+define('MINIFY_CSS', false);
+
+/**
+ * OPTIONAL
+ * Whether to minify JavaScript files if USE_YUI_COMPRESSOR option is true
+ *
+ * @var boolean Whether to use yui-compressor for css minimisation or not
+ * @link http://yui.github.io/yuicompressor/
+ */
+define('MINIFY_JS', false);
