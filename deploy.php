@@ -213,8 +213,12 @@ if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	$requiredBinaries[] = 'composer --no-ansi';
 }
+if (defined('USE_YUI_COMPRESSOR') && USE_YUI_COMPRESSOR === true) {
+	$requiredBinaries[] = 'find';
+	$requiredBinaries[] = 'yui-compressor';
+}
 foreach ($requiredBinaries as $command) {
-	$path = trim(shell_exec('which '.$command));
+	$path = trim(shell_exec('export PATH=$PATH; which '.$command));
 	if ($path == '') {
 		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
@@ -304,6 +308,22 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	if (defined('COMPOSER_HOME') && is_dir(COMPOSER_HOME)) {
 		putenv('COMPOSER_HOME='.COMPOSER_HOME);
 	}
+}
+
+// Invoke YUI Compressor
+if (defined('USE_YUI_COMPRESSOR') && USE_YUI_COMPRESSOR === true) {
+    if (defined('MINIFY_CSS') && MINIFY_CSS === true) {
+        $commands[] = sprintf(
+            'find %s -name \'*.css\' -exec sh -c \'for i; do yui-compressor "$i" --type css -o "$i"; echo $i; done\' sh {} +'
+            , TMP_DIR
+        );
+    }
+    if (defined('MINIFY_JS') && MINIFY_JS === true) {
+        $commands[] = sprintf(
+            'find %s -name \'*.js\' -exec sh -c \'for i; do yui-compressor "$i" --type js -o "$i"; echo $i; done\' sh {} +'
+            , TMP_DIR
+        );
+    }
 }
 
 // ==================================================[ Deployment ]===
