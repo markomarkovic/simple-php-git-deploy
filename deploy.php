@@ -220,6 +220,9 @@ if (defined('USE_YUI_COMPRESSOR') && USE_YUI_COMPRESSOR === true) {
 if (defined('USE_REPLACE_CONFIG_FILES') && USE_REPLACE_CONFIG_FILES === true) {
     $requiredBinaries[] = '/bin/cp';
 }
+if (defined('USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE') && USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE === true) {
+    $requiredBinaries[] = 'chmod';
+}
 foreach ($requiredBinaries as $command) {
 	$path = trim(shell_exec('export PATH=$PATH; which '.$command));
 	if ($path == '') {
@@ -339,7 +342,7 @@ if (defined('USE_REPLACE_CONFIG_FILES') && USE_REPLACE_CONFIG_FILES === true) {
                 , TMP_DIR.$to
             );
         }else {
-            echo '<div class="error">file '.__DIR__."/config/".$from.' not found!</div>';
+            echo '<div class="error">file '.__DIR__.'/config/'.$from.' not found!</div>';
         }
     }
 }
@@ -361,6 +364,17 @@ $commands[] = sprintf(
 );
 
 // =======================================[ Post-Deployment steps ]===
+
+// Change permission of files or directory
+if (defined('USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE') && USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE === true) {
+    foreach (unserialize(FILE_OR_DIRECTORY_PERMISSION_ASSURANCE_LIST) as $dir => $permission) {
+        $commands[] = sprintf(
+            'chmod %s --recursive --changes %s'
+            , $permission
+            , TARGET_DIR.$dir
+        );
+    }
+}
 
 // Remove the TMP_DIR (depends on CLEAN_UP)
 if (CLEAN_UP) {
