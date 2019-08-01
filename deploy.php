@@ -213,8 +213,18 @@ if (defined('BACKUP_DIR') && BACKUP_DIR !== false) {
 if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	$requiredBinaries[] = 'composer --no-ansi';
 }
+if (defined('USE_YUI_COMPRESSOR') && USE_YUI_COMPRESSOR === true) {
+	$requiredBinaries[] = 'find';
+	$requiredBinaries[] = 'yui-compressor';
+}
+if (defined('USE_REPLACE_CONFIG_FILES') && USE_REPLACE_CONFIG_FILES === true) {
+    $requiredBinaries[] = '/bin/cp';
+}
+if (defined('USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE') && USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE === true) {
+    $requiredBinaries[] = 'chmod';
+}
 foreach ($requiredBinaries as $command) {
-	$path = trim(shell_exec('which '.$command));
+	$path = trim(shell_exec('export PATH=$PATH; which '.$command));
 	if ($path == '') {
 		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		die(sprintf('<div class="error"><b>%s</b> not available. It needs to be installed on the server for this script to work.</div>', $command));
@@ -306,6 +316,37 @@ if (defined('USE_COMPOSER') && USE_COMPOSER === true) {
 	}
 }
 
+// Invoke YUI Compressor
+if (defined('USE_YUI_COMPRESSOR') && USE_YUI_COMPRESSOR === true) {
+    if (defined('MINIFY_CSS') && MINIFY_CSS === true) {
+        $commands[] = sprintf(
+            'find %s -name \'*.css\' -exec sh -c \'for i; do yui-compressor "$i" --type css -o "$i"; echo $i; done\' sh {} +'
+            , TMP_DIR
+        );
+    }
+    if (defined('MINIFY_JS') && MINIFY_JS === true) {
+        $commands[] = sprintf(
+            'find %s -name \'*.js\' -exec sh -c \'for i; do yui-compressor "$i" --type js -o "$i"; echo $i; done\' sh {} +'
+            , TMP_DIR
+        );
+    }
+}
+
+// Copy and replace config files
+if (defined('USE_REPLACE_CONFIG_FILES') && USE_REPLACE_CONFIG_FILES === true) {
+    foreach (unserialize(REPLACE_CONFIG_FILES_MAP) as $from => $to) {
+        if (file_exists(__DIR__."/config/".$from)) {
+            $commands[] = sprintf(
+                '/bin/cp -f %s %s'
+                , __DIR__."/config/".$from
+                , TMP_DIR.$to
+            );
+        }else {
+            echo '<div class="error">file '.__DIR__.'/config/'.$from.' not found!</div>';
+        }
+    }
+}
+
 // ==================================================[ Deployment ]===
 
 // Compile exclude parameters
@@ -323,6 +364,17 @@ $commands[] = sprintf(
 );
 
 // =======================================[ Post-Deployment steps ]===
+
+// Change permission of files or directory
+if (defined('USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE') && USE_FILE_OR_DIRECTORY_PERMISSION_ASSURANCE === true) {
+    foreach (unserialize(FILE_OR_DIRECTORY_PERMISSION_ASSURANCE_LIST) as $dir => $permission) {
+        $commands[] = sprintf(
+            'chmod %s --recursive --changes %s'
+            , $permission
+            , TARGET_DIR.$dir
+        );
+    }
+}
 
 // Remove the TMP_DIR (depends on CLEAN_UP)
 if (CLEAN_UP) {
