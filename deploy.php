@@ -17,6 +17,10 @@
  * configuration options there instead of here. That way, you won't have to edit
  * the configuration again if you download the new version of `deploy.php`.
  */
+
+$git_post_json = json_decode($_POST['payload']);
+$update_branch = substr($git_post_json->{'ref'}, 11);
+
 if (file_exists(basename(__FILE__, '.php').'-config.php')) {
 	define('CONFIG_FILE', basename(__FILE__, '.php').'-config.php');
 	require_once CONFIG_FILE;
@@ -167,6 +171,9 @@ if (!defined('EMAIL_ON_ERROR')) define('EMAIL_ON_ERROR', false);
 if (!isset($_GET['sat']) || $_GET['sat'] !== SECRET_ACCESS_TOKEN || SECRET_ACCESS_TOKEN === 'BetterChangeMeNowOrSufferTheConsequences') {
 	header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 }
+
+if ($update_branch == BRANCH){
+
 ob_start();
 ?>
 <!DOCTYPE html>
@@ -399,3 +406,4 @@ Done.
 </pre>
 </body>
 </html>
+<?php } ?>
